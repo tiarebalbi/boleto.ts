@@ -5,7 +5,8 @@ export default defineConfig({
   plugins: [
     dts({
       include: ['src'],
-      rollupTypes: true
+      rollupTypes: true,
+      fileName: 'boleto.d.ts'
     })
   ],
   build: {

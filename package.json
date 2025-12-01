@@ -25,15 +25,15 @@
   ],
   "main": "./dist/boleto.cjs",
   "module": "./dist/boleto.js",
-  "types": "./dist/main.d.ts",
+  "types": "./dist/boleto.d.ts",
   "exports": {
     ".": {
       "import": {
-        "types": "./dist/main.d.ts",
+        "types": "./dist/boleto.d.ts",
         "default": "./dist/boleto.js"
       },
       "require": {
-        "types": "./dist/main.d.ts",
+        "types": "./dist/boleto.d.ts",
         "default": "./dist/boleto.cjs"
       }
     }
