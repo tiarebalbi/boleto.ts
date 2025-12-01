@@ -6,4 +6,8 @@
  * @packageDocumentation
  */
 
-// Library entry point - exports will be added as the library is implemented
+export { Boleto } from './boleto.ts';
+export type { Currency } from './boleto.ts';
+export { SVG } from './svg.ts';
+export { encode } from './itf.ts';
+export { modulo11 } from './helpers.ts';
