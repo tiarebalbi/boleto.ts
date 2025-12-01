@@ -38,12 +38,14 @@ pnpm add boleto.ts
 import { Boleto } from 'boleto.ts';
 
 // Create a boleto instance with the printed number
-const boleto = new Boleto('23793.38128 86000.000009 00000.000380 1 84660000012345');
+const boleto = new Boleto(
+  '23793.38128 86000.000009 00000.000380 1 84660000012345',
+);
 
 // Get payment information
-console.log(boleto.bank());           // 'Bradesco'
-console.log(boleto.amount());         // '123.45'
-console.log(boleto.prettyAmount());   // 'R$ 123,45'
+console.log(boleto.bank()); // 'Bradesco'
+console.log(boleto.amount()); // '123.45'
+console.log(boleto.prettyAmount()); // 'R$ 123,45'
 console.log(boleto.expirationDate()); // Date object
 
 // Render barcode as SVG
@@ -63,15 +65,20 @@ new Boleto(bankSlipNumber: string)
 ```
 
 **Parameters:**
+
 - `bankSlipNumber`: The bank slip number (linha digitável). Can contain formatting characters (dots, spaces) which will be automatically stripped.
 
 **Throws:**
+
 - `Error` if the bank slip number is invalid (wrong length or invalid checksum).
 
 **Example:**
+
 ```typescript
 // Both formats are accepted
-const boleto1 = new Boleto('23793.38128 86000.000009 00000.000380 1 84660000012345');
+const boleto1 = new Boleto(
+  '23793.38128 86000.000009 00000.000380 1 84660000012345',
+);
 const boleto2 = new Boleto('23793381288600000000900000000380184660000012345');
 ```
 
@@ -82,7 +89,9 @@ const boleto2 = new Boleto('23793381288600000000900000000380184660000012345');
 Returns the raw bank slip number (digits only, 47 characters).
 
 ```typescript
-const boleto = new Boleto('23793.38128 86000.000009 00000.000380 1 84660000012345');
+const boleto = new Boleto(
+  '23793.38128 86000.000009 00000.000380 1 84660000012345',
+);
 boleto.number();
 // Returns: '23793381288600000000900000000380184660000012345'
 ```
@@ -102,7 +111,9 @@ boleto.prettyNumber();
 Converts the bank slip number to its barcode representation (44 digits).
 
 ```typescript
-const boleto = new Boleto('23793.38128 86000.000009 00000.000380 1 84660000012345');
+const boleto = new Boleto(
+  '23793.38128 86000.000009 00000.000380 1 84660000012345',
+);
 boleto.barcode();
 // Returns: '23791846600000123453381286000000000000000038'
 ```
@@ -112,7 +123,9 @@ boleto.barcode();
 Returns the verification digit of the barcode (5th digit).
 
 ```typescript
-const boleto = new Boleto('23793.38128 86000.000009 00000.000380 1 84660000012345');
+const boleto = new Boleto(
+  '23793.38128 86000.000009 00000.000380 1 84660000012345',
+);
 boleto.checksum();
 // Returns: '1'
 ```
@@ -122,7 +135,9 @@ boleto.checksum();
 Returns the name of the issuing bank based on the bank code.
 
 ```typescript
-const boleto = new Boleto('23793.38128 86000.000009 00000.000380 1 84660000012345');
+const boleto = new Boleto(
+  '23793.38128 86000.000009 00000.000380 1 84660000012345',
+);
 boleto.bank();
 // Returns: 'Bradesco'
 ```
@@ -133,12 +148,14 @@ Returns currency information for the bank slip.
 
 ```typescript
 interface Currency {
-  code: string;    // ISO 4217 code (e.g., 'BRL')
-  symbol: string;  // Currency symbol (e.g., 'R$')
+  code: string; // ISO 4217 code (e.g., 'BRL')
+  symbol: string; // Currency symbol (e.g., 'R$')
   decimal: string; // Decimal separator (e.g., ',')
 }
 
-const boleto = new Boleto('23793.38128 86000.000009 00000.000380 1 84660000012345');
+const boleto = new Boleto(
+  '23793.38128 86000.000009 00000.000380 1 84660000012345',
+);
 boleto.currency();
 // Returns: { code: 'BRL', symbol: 'R$', decimal: ',' }
 ```
@@ -148,7 +165,9 @@ boleto.currency();
 Returns the payment amount as a string with 2 decimal places.
 
 ```typescript
-const boleto = new Boleto('23793.38128 86000.000009 00000.000380 1 84660000012345');
+const boleto = new Boleto(
+  '23793.38128 86000.000009 00000.000380 1 84660000012345',
+);
 boleto.amount();
 // Returns: '123.45'
 ```
@@ -158,7 +177,9 @@ boleto.amount();
 Returns the formatted payment amount with currency symbol.
 
 ```typescript
-const boleto = new Boleto('23793.38128 86000.000009 00000.000380 1 84660000012345');
+const boleto = new Boleto(
+  '23793.38128 86000.000009 00000.000380 1 84660000012345',
+);
 boleto.prettyAmount();
 // Returns: 'R$ 123,45'
 ```
@@ -168,7 +189,9 @@ boleto.prettyAmount();
 Returns the expiration date of the bank slip as a JavaScript Date object.
 
 ```typescript
-const boleto = new Boleto('23793.38128 86000.000009 00000.000380 1 84660000012345');
+const boleto = new Boleto(
+  '23793.38128 86000.000009 00000.000380 1 84660000012345',
+);
 boleto.expirationDate();
 // Returns: Date object representing the expiration date
 ```
@@ -178,14 +201,18 @@ boleto.expirationDate();
 Renders the barcode as an SVG element.
 
 **Parameters:**
+
 - `selector` (optional): CSS selector for the DOM element where the SVG should be appended.
 
 **Returns:**
+
 - If `selector` is omitted: returns the SVG as a string.
 - If `selector` is provided: appends the SVG to the selected element and returns `null`.
 
 ```typescript
-const boleto = new Boleto('23793.38128 86000.000009 00000.000380 1 84660000012345');
+const boleto = new Boleto(
+  '23793.38128 86000.000009 00000.000380 1 84660000012345',
+);
 
 // Get SVG as string
 const svgString = boleto.toSVG();
@@ -199,7 +226,9 @@ boleto.toSVG('#barcode-container');
 Validates whether the bank slip number is valid.
 
 ```typescript
-const boleto = new Boleto('23793.38128 86000.000009 00000.000380 1 84660000012345');
+const boleto = new Boleto(
+  '23793.38128 86000.000009 00000.000380 1 84660000012345',
+);
 boleto.valid();
 // Returns: true
 ```
@@ -215,7 +244,7 @@ const boletoNumber = '23793.38128 86000.000009 00000.000380 1 84660000012345';
 
 try {
   const boleto = new Boleto(boletoNumber);
-  
+
   console.log('Bank:', boleto.bank());
   console.log('Amount:', boleto.prettyAmount());
   console.log('Expires:', boleto.expirationDate().toLocaleDateString('pt-BR'));
@@ -230,54 +259,57 @@ try {
 ```html
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Boleto Viewer</title>
-  <style>
-    #barcode {
-      width: 100%;
-      max-width: 400px;
-      height: 80px;
-    }
-    .info {
-      margin: 10px 0;
-      font-family: monospace;
-    }
-  </style>
-</head>
-<body>
-  <h1>Boleto Viewer</h1>
-  
-  <div id="barcode"></div>
-  
-  <div class="info">
-    <p>Bank: <span id="bank"></span></p>
-    <p>Amount: <span id="amount"></span></p>
-    <p>Expiration: <span id="expiration"></span></p>
-    <p>Number: <span id="number"></span></p>
-  </div>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Boleto Viewer</title>
+    <style>
+      #barcode {
+        width: 100%;
+        max-width: 400px;
+        height: 80px;
+      }
+      .info {
+        margin: 10px 0;
+        font-family: monospace;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Boleto Viewer</h1>
 
-  <script type="module">
-    import { Boleto } from 'boleto.ts';
-    
-    const boletoNumber = '23793.38128 86000.000009 00000.000380 1 84660000012345';
-    
-    try {
-      const boleto = new Boleto(boletoNumber);
-      
-      // Render barcode
-      boleto.toSVG('#barcode');
-      
-      // Display information
-      document.getElementById('bank').textContent = boleto.bank();
-      document.getElementById('amount').textContent = boleto.prettyAmount();
-      document.getElementById('expiration').textContent = boleto.expirationDate().toLocaleDateString('pt-BR');
-      document.getElementById('number').textContent = boleto.prettyNumber();
-    } catch (error) {
-      console.error('Error:', error.message);
-    }
-  </script>
-</body>
+    <div id="barcode"></div>
+
+    <div class="info">
+      <p>Bank: <span id="bank"></span></p>
+      <p>Amount: <span id="amount"></span></p>
+      <p>Expiration: <span id="expiration"></span></p>
+      <p>Number: <span id="number"></span></p>
+    </div>
+
+    <script type="module">
+      import { Boleto } from 'boleto.ts';
+
+      const boletoNumber =
+        '23793.38128 86000.000009 00000.000380 1 84660000012345';
+
+      try {
+        const boleto = new Boleto(boletoNumber);
+
+        // Render barcode
+        boleto.toSVG('#barcode');
+
+        // Display information
+        document.getElementById('bank').textContent = boleto.bank();
+        document.getElementById('amount').textContent = boleto.prettyAmount();
+        document.getElementById('expiration').textContent = boleto
+          .expirationDate()
+          .toLocaleDateString('pt-BR');
+        document.getElementById('number').textContent = boleto.prettyNumber();
+      } catch (error) {
+        console.error('Error:', error.message);
+      }
+    </script>
+  </body>
 </html>
 ```
 
@@ -296,7 +328,7 @@ const boletoNumber = '23793.38128 86000.000009 00000.000380 1 84660000012345';
 
 try {
   const boleto = new Boleto(boletoNumber);
-  
+
   // Get payment details
   const details = {
     bank: boleto.bank(),
@@ -307,9 +339,9 @@ try {
     number: boleto.number(),
     prettyNumber: boleto.prettyNumber(),
   };
-  
+
   console.log(JSON.stringify(details, null, 2));
-  
+
   // Generate SVG string
   const svg = boleto.toSVG();
   console.log('SVG:', svg);
@@ -344,7 +376,7 @@ export function BoletoViewer({ number }: BoletoViewerProps) {
   useEffect(() => {
     try {
       const boleto = new Boleto(number);
-      
+
       setInfo({
         bank: boleto.bank(),
         amount: boleto.amount(),
@@ -352,12 +384,12 @@ export function BoletoViewer({ number }: BoletoViewerProps) {
         expirationDate: boleto.expirationDate(),
         prettyNumber: boleto.prettyNumber(),
       });
-      
+
       if (barcodeRef.current) {
         barcodeRef.current.innerHTML = '';
         boleto.toSVG(`#${barcodeRef.current.id}`);
       }
-      
+
       setError(null);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Invalid boleto number');
@@ -371,13 +403,26 @@ export function BoletoViewer({ number }: BoletoViewerProps) {
 
   return (
     <div className="boleto-viewer">
-      <div id="boleto-barcode" ref={barcodeRef} style={{ width: '100%', height: '80px' }} />
+      <div
+        id="boleto-barcode"
+        ref={barcodeRef}
+        style={{ width: '100%', height: '80px' }}
+      />
       {info && (
         <div className="boleto-info">
-          <p><strong>Bank:</strong> {info.bank}</p>
-          <p><strong>Amount:</strong> {info.prettyAmount}</p>
-          <p><strong>Expiration:</strong> {info.expirationDate.toLocaleDateString('pt-BR')}</p>
-          <p><strong>Number:</strong> {info.prettyNumber}</p>
+          <p>
+            <strong>Bank:</strong> {info.bank}
+          </p>
+          <p>
+            <strong>Amount:</strong> {info.prettyAmount}
+          </p>
+          <p>
+            <strong>Expiration:</strong>{' '}
+            {info.expirationDate.toLocaleDateString('pt-BR')}
+          </p>
+          <p>
+            <strong>Number:</strong> {info.prettyNumber}
+          </p>
         </div>
       )}
     </div>
@@ -433,7 +478,7 @@ const formattedDate = computed(() => {
 function renderBoleto() {
   try {
     const boleto = new Boleto(props.number);
-    
+
     info.value = {
       bank: boleto.bank(),
       amount: boleto.amount(),
@@ -441,7 +486,7 @@ function renderBoleto() {
       expirationDate: boleto.expirationDate(),
       prettyNumber: boleto.prettyNumber(),
     };
-    
+
     if (barcodeContainer.value) {
       barcodeContainer.value.innerHTML = '';
       const svg = boleto.toSVG();
@@ -449,7 +494,7 @@ function renderBoleto() {
         barcodeContainer.value.innerHTML = svg;
       }
     }
-    
+
     error.value = null;
   } catch (err) {
     error.value = err instanceof Error ? err.message : 'Invalid boleto number';
@@ -515,7 +560,9 @@ import { Boleto } from 'boleto.ts';
 import type { Currency } from 'boleto.ts';
 
 // All methods are fully typed
-const boleto = new Boleto('23793.38128 86000.000009 00000.000380 1 84660000012345');
+const boleto = new Boleto(
+  '23793.38128 86000.000009 00000.000380 1 84660000012345',
+);
 
 const number: string = boleto.number();
 const barcode: string = boleto.barcode();
@@ -526,9 +573,9 @@ const currency: Currency | 'Unknown' = boleto.currency();
 
 // Type guard for currency
 if (currency !== 'Unknown') {
-  console.log(currency.code);   // 'BRL'
+  console.log(currency.code); // 'BRL'
   console.log(currency.symbol); // 'R$'
-  console.log(currency.decimal);// ','
+  console.log(currency.decimal); // ','
 }
 ```
 
@@ -536,29 +583,29 @@ if (currency !== 'Unknown') {
 
 The library recognizes the following Brazilian banks:
 
-| Code | Bank Name |
-|------|-----------|
-| 001 | Banco do Brasil |
-| 007 | BNDES |
-| 033 | Santander |
-| 069 | Crefisa |
-| 077 | Banco Inter |
-| 102 | XP Investimentos |
-| 104 | Caixa Econômica Federal |
-| 140 | Easynvest |
-| 197 | Stone |
-| 208 | BTG Pactual |
-| 212 | Banco Original |
-| 237 | Bradesco |
-| 260 | Nu Pagamentos |
-| 341 | Itaú |
-| 389 | Banco Mercantil do Brasil |
-| 422 | Banco Safra |
-| 505 | Credit Suisse |
-| 633 | Banco Rendimento |
-| 652 | Itaú Unibanco |
-| 735 | Banco Neon |
-| 739 | Banco Cetelem |
-| 745 | Citibank |
+| Code | Bank Name                 |
+| ---- | ------------------------- |
+| 001  | Banco do Brasil           |
+| 007  | BNDES                     |
+| 033  | Santander                 |
+| 069  | Crefisa                   |
+| 077  | Banco Inter               |
+| 102  | XP Investimentos          |
+| 104  | Caixa Econômica Federal   |
+| 140  | Easynvest                 |
+| 197  | Stone                     |
+| 208  | BTG Pactual               |
+| 212  | Banco Original            |
+| 237  | Bradesco                  |
+| 260  | Nu Pagamentos             |
+| 341  | Itaú                      |
+| 389  | Banco Mercantil do Brasil |
+| 422  | Banco Safra               |
+| 505  | Credit Suisse             |
+| 633  | Banco Rendimento          |
+| 652  | Itaú Unibanco             |
+| 735  | Banco Neon                |
+| 739  | Banco Cetelem             |
+| 745  | Citibank                  |
 
 Banks not in this list will return `'Unknown'` from the `bank()` method.

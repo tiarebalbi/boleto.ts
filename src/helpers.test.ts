@@ -29,7 +29,8 @@ describe('modulo11', () => {
     // Sample barcode without checksum digit (positions 0-3 and 5-43)
     // Barcode: 23791846600000123453381286000000000000000038
     // Without checksum at position 4: 2379846600000123453381286000000000000000038
-    const barcodeWithoutChecksum = '2379846600000123453381286000000000000000038';
+    const barcodeWithoutChecksum =
+      '2379846600000123453381286000000000000000038';
     expect(modulo11(barcodeWithoutChecksum)).toBe(1);
   });
 
