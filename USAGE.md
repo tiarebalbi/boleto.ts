@@ -70,7 +70,7 @@ new Boleto(bankSlipNumber: string)
 
 **Throws:**
 
-- `Error` if the bank slip number is invalid (wrong length or invalid checksum).
+- `BoletoValidationError` if the bank slip number is invalid (wrong length or invalid checksum). This custom error class extends `Error` and includes the `bankSlipNumber` property containing the invalid input.
 
 **Example:**
 
@@ -142,9 +142,9 @@ boleto.bank();
 // Returns: 'Bradesco'
 ```
 
-#### `currency(): Currency | 'Unknown'`
+#### `currency(): Currency | null`
 
-Returns currency information for the bank slip.
+Returns currency information for the bank slip, or `null` if the currency is unknown.
 
 ```typescript
 interface Currency {
@@ -158,6 +158,7 @@ const boleto = new Boleto(
 );
 boleto.currency();
 // Returns: { code: 'BRL', symbol: 'R$', decimal: ',' }
+// Returns: null if currency is unknown
 ```
 
 #### `amount(): string`
@@ -521,23 +522,29 @@ watch(() => props.number, renderBoleto);
 
 ## Error Handling
 
-The library throws an error when an invalid boleto number is provided:
+The library throws a `BoletoValidationError` when an invalid boleto number is provided. This custom error class extends `Error` and includes the invalid bank slip number for debugging purposes:
 
 ```typescript
-import { Boleto } from '@tiarebalbi/boleto.ts';
+import { Boleto, BoletoValidationError } from '@tiarebalbi/boleto.ts';
 
 // Invalid number - wrong length
 try {
   new Boleto('1234567890');
 } catch (error) {
-  console.error(error.message); // 'Invalid bank slip number'
+  if (error instanceof BoletoValidationError) {
+    console.error(error.message); // 'Invalid bank slip number'
+    console.error(error.bankSlipNumber); // '1234567890' - the invalid input
+    console.error(error.name); // 'BoletoValidationError'
+  }
 }
 
 // Invalid number - wrong checksum
 try {
   new Boleto('12345678901234567890123456789012345678901234567');
 } catch (error) {
-  console.error(error.message); // 'Invalid bank slip number'
+  if (error instanceof BoletoValidationError) {
+    console.error(error.message); // 'Invalid bank slip number'
+  }
 }
 
 // Validation function for user input
@@ -549,6 +556,19 @@ function validateBoletoNumber(input: string): boolean {
     return false;
   }
 }
+
+// Type-safe error handling with BoletoValidationError
+function processBoletoDaSafely(input: string): string | null {
+  try {
+    const boleto = new Boleto(input);
+    return boleto.prettyAmount();
+  } catch (error) {
+    if (error instanceof BoletoValidationError) {
+      console.error(`Invalid boleto: ${error.bankSlipNumber}`);
+    }
+    return null;
+  }
+}
 ```
 
 ## TypeScript Support
@@ -556,7 +576,7 @@ function validateBoletoNumber(input: string): boolean {
 The library provides full TypeScript support with exported types:
 
 ```typescript
-import { Boleto } from '@tiarebalbi/boleto.ts';
+import { Boleto, BoletoValidationError } from '@tiarebalbi/boleto.ts';
 import type { Currency } from '@tiarebalbi/boleto.ts';
 
 // All methods are fully typed
@@ -569,13 +589,22 @@ const barcode: string = boleto.barcode();
 const bank: string = boleto.bank();
 const amount: string = boleto.amount();
 const date: Date = boleto.expirationDate();
-const currency: Currency | 'Unknown' = boleto.currency();
+const currency: Currency | null = boleto.currency();
 
-// Type guard for currency
-if (currency !== 'Unknown') {
+// Type-safe null check for currency
+if (currency !== null) {
   console.log(currency.code); // 'BRL'
   console.log(currency.symbol); // 'R$'
   console.log(currency.decimal); // ','
+}
+
+// Type-safe error handling
+try {
+  new Boleto('invalid');
+} catch (error) {
+  if (error instanceof BoletoValidationError) {
+    console.error(error.bankSlipNumber); // Access the invalid input
+  }
 }
 ```
 

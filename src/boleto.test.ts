@@ -3,13 +3,35 @@
  */
 
 import { describe, it, expect, beforeEach } from 'vitest';
-import { Boleto } from './boleto.ts';
+import { Boleto, BoletoValidationError } from './boleto.ts';
 
 // Valid bank slip numbers for testing
 // Format: 00000.00000 00000.000000 00000.000000 0 00000000000000
 // This is a properly calculated valid boleto with correct checksums
 const VALID_BOLETO = '23793.38128 86000.000009 00000.000380 1 84660000012345';
 const VALID_BOLETO_CLEAN = '23793381288600000000900000000380184660000012345';
+
+describe('BoletoValidationError', () => {
+  it('should be an instance of Error', () => {
+    const error = new BoletoValidationError('Test error', '12345');
+    expect(error).toBeInstanceOf(Error);
+  });
+
+  it('should have correct name', () => {
+    const error = new BoletoValidationError('Test error', '12345');
+    expect(error.name).toBe('BoletoValidationError');
+  });
+
+  it('should store the bank slip number', () => {
+    const error = new BoletoValidationError('Test error', '12345');
+    expect(error.bankSlipNumber).toBe('12345');
+  });
+
+  it('should have the correct message', () => {
+    const error = new BoletoValidationError('Invalid boleto', '12345');
+    expect(error.message).toBe('Invalid boleto');
+  });
+});
 
 describe('Boleto', () => {
   describe('constructor', () => {
@@ -23,16 +45,25 @@ describe('Boleto', () => {
       expect(boleto.bankSlipNumber).toBe(VALID_BOLETO_CLEAN);
     });
 
-    it('should throw error for invalid bank slip number', () => {
+    it('should throw BoletoValidationError for invalid bank slip number', () => {
       expect(
         () => new Boleto('12345678901234567890123456789012345678901234567'),
-      ).toThrow('Invalid bank slip number');
+      ).toThrow(BoletoValidationError);
     });
 
-    it('should throw error for wrong length', () => {
-      expect(() => new Boleto('1234567890')).toThrow(
-        'Invalid bank slip number',
-      );
+    it('should throw BoletoValidationError for wrong length', () => {
+      expect(() => new Boleto('1234567890')).toThrow(BoletoValidationError);
+    });
+
+    it('should include bank slip number in error', () => {
+      try {
+        new Boleto('1234567890');
+      } catch (error) {
+        expect(error).toBeInstanceOf(BoletoValidationError);
+        expect((error as BoletoValidationError).bankSlipNumber).toBe(
+          '1234567890',
+        );
+      }
     });
   });
 
@@ -113,6 +144,15 @@ describe('Boleto', () => {
         symbol: 'R$',
         decimal: ',',
       });
+    });
+
+    it('should return the same object reference for BRL currency', () => {
+      const boleto = new Boleto(VALID_BOLETO);
+      const currency1 = boleto.currency();
+      const currency2 = boleto.currency();
+
+      // Both calls should return the same cached object
+      expect(currency1).toBe(currency2);
     });
   });
 

@@ -6,7 +6,7 @@
  * @packageDocumentation
  */
 
-export { Boleto } from './boleto.ts';
+export { Boleto, BoletoValidationError } from './boleto.ts';
 export type { Currency } from './boleto.ts';
 export { SVG } from './svg.ts';
 export { encode } from './itf.ts';

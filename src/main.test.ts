@@ -3,13 +3,24 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { Boleto, SVG, encode, modulo11 } from './main.ts';
+import {
+  Boleto,
+  BoletoValidationError,
+  SVG,
+  encode,
+  modulo11,
+} from './main.ts';
 import type { Currency } from './main.ts';
 
 describe('main exports', () => {
   it('should export Boleto class', () => {
     expect(Boleto).toBeDefined();
     expect(typeof Boleto).toBe('function');
+  });
+
+  it('should export BoletoValidationError class', () => {
+    expect(BoletoValidationError).toBeDefined();
+    expect(typeof BoletoValidationError).toBe('function');
   });
 
   it('should export SVG class', () => {
