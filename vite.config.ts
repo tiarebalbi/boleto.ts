@@ -11,7 +11,7 @@ export default defineConfig({
   build: {
     lib: {
       entry: 'src/main.ts',
-      name: 'BoletoTS',
+      name: 'Boleto',
       fileName: 'boleto',
       formats: ['es', 'cjs']
     },
