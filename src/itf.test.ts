@@ -42,7 +42,7 @@ describe('encode', () => {
     // A real barcode example
     const barcode = '23791846600001234563381286000000000000000381';
     const result = encode(barcode);
-    
+
     // Should start with START pattern
     expect(result.startsWith('1111')).toBe(true);
     // Should end with STOP pattern

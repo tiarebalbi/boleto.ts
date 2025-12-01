@@ -31,7 +31,7 @@ describe('main exports', () => {
     const currency: Currency = {
       code: 'BRL',
       symbol: 'R$',
-      decimal: ','
+      decimal: ',',
     };
     expect(currency.code).toBe('BRL');
   });
