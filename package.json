@@ -48,8 +48,8 @@
     "typecheck": "tsc --noEmit",
     "lint": "eslint src/",
     "lint:fix": "eslint src/ --fix",
-    "format": "prettier --write src/",
-    "format:check": "prettier --check src/",
+    "format": "prettier --write \"**/*.{ts,js,jsx,tsx,json,md}\" \"eslint.config.js\" \"vite.config.ts\"",
+    "format:check": "prettier --check \"**/*.{ts,js,jsx,tsx,json,md}\" \"eslint.config.js\" \"vite.config.ts\"",
     "test": "vitest run",
     "test:watch": "vitest"
   },
