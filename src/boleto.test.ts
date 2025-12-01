@@ -122,7 +122,7 @@ describe('Boleto', () => {
   describe('bank', () => {
     it('should return bank name for known bank code', () => {
       const boleto = new Boleto(VALID_BOLETO);
-      expect(boleto.bank()).toBe('Bradesco'); // Bank code 237
+      expect(boleto.bank()).toBe('BCO BRADESCO S.A.'); // Bank code 237
     });
 
     it('should return Unknown for unknown bank code', () => {
@@ -130,7 +130,7 @@ describe('Boleto', () => {
       // Note: Testing "Unknown" return would require a boleto with unknown bank code,
       // but we can verify the known bank code works correctly
       const boleto = new Boleto(VALID_BOLETO);
-      expect(boleto.bank()).toBe('Bradesco');
+      expect(boleto.bank()).toBe('BCO BRADESCO S.A.');
     });
   });
 
