@@ -49,7 +49,10 @@ export class SVG {
     for (let i = 0; i < this.stripes.length; i += 1, pos += width) {
       width = this.stripeWidth * this.stripes[i];
 
-      const shape = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+      const shape = document.createElementNS(
+        'http://www.w3.org/2000/svg',
+        'rect',
+      );
       shape.setAttribute('width', String(width));
       shape.setAttribute('height', '100');
       shape.setAttribute('fill', SVG.color(i));

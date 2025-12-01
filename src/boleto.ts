@@ -113,7 +113,7 @@ export class Boleto {
   barcode(): string {
     return this.bankSlipNumber.replace(
       /^(\d{4})(\d{5})\d{1}(\d{10})\d{1}(\d{10})\d{1}(\d{15})$/,
-      '$1$5$2$3$4'
+      '$1$5$2$3$4',
     );
   }
 
@@ -135,7 +135,7 @@ export class Boleto {
   prettyNumber(): string {
     return this.bankSlipNumber.replace(
       /^(\d{5})(\d{5})(\d{5})(\d{6})(\d{5})(\d{6})(\d{1})(\d{14})$/,
-      '$1.$2 $3.$4 $5.$6 $7 $8'
+      '$1.$2 $3.$4 $5.$6 $7 $8',
     );
   }
 
