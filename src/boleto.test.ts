@@ -24,13 +24,15 @@ describe('Boleto', () => {
     });
 
     it('should throw error for invalid bank slip number', () => {
-      expect(() => new Boleto('12345678901234567890123456789012345678901234567')).toThrow(
-        'Invalid bank slip number'
-      );
+      expect(
+        () => new Boleto('12345678901234567890123456789012345678901234567'),
+      ).toThrow('Invalid bank slip number');
     });
 
     it('should throw error for wrong length', () => {
-      expect(() => new Boleto('1234567890')).toThrow('Invalid bank slip number');
+      expect(() => new Boleto('1234567890')).toThrow(
+        'Invalid bank slip number',
+      );
     });
   });
 
@@ -51,7 +53,7 @@ describe('Boleto', () => {
     it('should convert bank slip number to barcode format', () => {
       const boleto = new Boleto(VALID_BOLETO);
       const barcode = boleto.barcode();
-      
+
       // Barcode should be 44 digits
       expect(barcode.length).toBe(44);
       // Barcode should only contain digits
@@ -61,7 +63,7 @@ describe('Boleto', () => {
     it('should rearrange digits according to specification', () => {
       const boleto = new Boleto(VALID_BOLETO);
       const barcode = boleto.barcode();
-      
+
       // Bank code should be first 3 digits
       expect(barcode.substring(0, 3)).toBe('237');
     });
@@ -78,9 +80,11 @@ describe('Boleto', () => {
     it('should format number with proper mask', () => {
       const boleto = new Boleto(VALID_BOLETO);
       const pretty = boleto.prettyNumber();
-      
+
       // Should match format: 00000.00000 00000.000000 00000.000000 0 00000000000000
-      expect(pretty).toMatch(/^\d{5}\.\d{5} \d{5}\.\d{6} \d{5}\.\d{6} \d \d{14}$/);
+      expect(pretty).toMatch(
+        /^\d{5}\.\d{5} \d{5}\.\d{6} \d{5}\.\d{6} \d \d{14}$/,
+      );
     });
   });
 
@@ -103,11 +107,11 @@ describe('Boleto', () => {
     it('should return BRL currency info for currency code 9', () => {
       const boleto = new Boleto(VALID_BOLETO);
       const currency = boleto.currency();
-      
+
       expect(currency).toEqual({
         code: 'BRL',
         symbol: 'R$',
-        decimal: ','
+        decimal: ',',
       });
     });
   });
@@ -116,7 +120,7 @@ describe('Boleto', () => {
     it('should return the barcode checksum digit', () => {
       const boleto = new Boleto(VALID_BOLETO);
       const checksum = boleto.checksum();
-      
+
       expect(checksum).toMatch(/^\d$/);
       expect(checksum).toBe(boleto.barcode()[4]);
     });
@@ -126,7 +130,7 @@ describe('Boleto', () => {
     it('should calculate expiration date based on barcode', () => {
       const boleto = new Boleto(VALID_BOLETO);
       const date = boleto.expirationDate();
-      
+
       expect(date).toBeInstanceOf(Date);
       // The date should be after the epoch (1997-10-07)
       expect(date.getTime()).toBeGreaterThan(876236400000);
@@ -135,7 +139,7 @@ describe('Boleto', () => {
     it('should return a valid date object', () => {
       const boleto = new Boleto(VALID_BOLETO);
       const date = boleto.expirationDate();
-      
+
       expect(date.toString()).not.toBe('Invalid Date');
     });
   });
@@ -144,14 +148,14 @@ describe('Boleto', () => {
     it('should return amount with 2 decimal places', () => {
       const boleto = new Boleto(VALID_BOLETO);
       const amount = boleto.amount();
-      
+
       expect(amount).toMatch(/^\d+\.\d{2}$/);
     });
 
     it('should correctly parse amount from barcode', () => {
       const boleto = new Boleto(VALID_BOLETO);
       const amount = boleto.amount();
-      
+
       // Amount is from positions 9-18 of barcode, divided by 100
       expect(parseFloat(amount)).toBeGreaterThanOrEqual(0);
     });
@@ -161,7 +165,7 @@ describe('Boleto', () => {
     it('should return formatted amount with BRL symbol', () => {
       const boleto = new Boleto(VALID_BOLETO);
       const prettyAmount = boleto.prettyAmount();
-      
+
       expect(prettyAmount).toContain('R$');
       expect(prettyAmount).toContain(',');
     });
@@ -175,7 +179,7 @@ describe('Boleto', () => {
     it('should return SVG string when no selector is provided', () => {
       const boleto = new Boleto(VALID_BOLETO);
       const result = boleto.toSVG();
-      
+
       expect(result).not.toBeNull();
       expect(result).toContain('<svg');
       expect(result).toContain('<rect');
@@ -185,7 +189,7 @@ describe('Boleto', () => {
       document.body.innerHTML = '<div id="barcode"></div>';
       const boleto = new Boleto(VALID_BOLETO);
       const result = boleto.toSVG('#barcode');
-      
+
       expect(result).toBeNull();
       const container = document.querySelector('#barcode');
       expect(container?.querySelector('svg')).not.toBeNull();

@@ -1,5 +1,5 @@
 {
-  "name": "boleto.ts",
+  "name": "@tiarebalbi/boleto.ts",
   "version": "0.1.0",
   "description": "A TypeScript library for parsing and rendering Brazilian bank payment slips (boletos bancários)",
   "type": "module",
@@ -13,6 +13,9 @@
     "url": "https://github.com/tiarebalbi/boleto.ts/issues"
   },
   "homepage": "https://github.com/tiarebalbi/boleto.ts#readme",
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
   "keywords": [
     "boleto",
     "boleto-bancario",
