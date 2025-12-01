@@ -21,6 +21,16 @@ export interface Currency {
 }
 
 /**
+ * Reference date epoch for boleto expiration calculation (1997-10-07 12:00:00 GMT-0300)
+ */
+const BOLETO_EPOCH = 876236400000;
+
+/**
+ * Number of milliseconds in a day
+ */
+const MILLISECONDS_PER_DAY = 86400000;
+
+/**
  * Bank codes and their corresponding names
  */
 const BANK_CODES: Record<string, string> = {
@@ -85,9 +95,10 @@ export class Boleto {
     if (this.bankSlipNumber.length !== 47) return false;
 
     const barcodeDigits = this.barcode().split('');
-    const checksum = barcodeDigits.splice(4, 1);
+    const checksumArray = barcodeDigits.splice(4, 1);
+    const checksum = checksumArray[0];
 
-    return modulo11(barcodeDigits).toString() === checksum.toString();
+    return modulo11(barcodeDigits).toString() === checksum;
   }
 
   /**
@@ -96,7 +107,7 @@ export class Boleto {
    * The bank slip's number is a rearrangement of its barcode, plus three
    * checksum digits. This function executes the inverse process and returns the
    * original arrangement of the code. Specifications can be found at
-   * https://portal.febraban.org.br/pagina/3166/33/pt-br/layour-arrecadacao
+   * https://portal.febraban.org.br/pagina/3166/33/pt-br/layout-arrecadacao
    *
    * @returns The barcode extracted from the bank slip number
    */
@@ -183,10 +194,10 @@ export class Boleto {
    * @returns The expiration date of the bank slip
    */
   expirationDate(): Date {
-    const refDate = new Date(876236400000); // 1997-10-07 12:00:00 GMT-0300
+    const refDate = new Date(BOLETO_EPOCH);
     const days = parseInt(this.barcode().substring(5, 9), 10);
 
-    return new Date(refDate.getTime() + days * 86400000);
+    return new Date(refDate.getTime() + days * MILLISECONDS_PER_DAY);
   }
 
   /**

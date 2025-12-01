@@ -8,7 +8,7 @@
  * Calculates the modulo 11 checksum digit
  *
  * The specifications of the algorithm can be found at
- * https://portal.febraban.org.br/pagina/3166/33/pt-br/layour-arrecadacao
+ * https://portal.febraban.org.br/pagina/3166/33/pt-br/layout-arrecadacao
  *
  * @param number - The number to calculate checksum for (string or array of digit strings)
  * @returns The modulo 11 checksum digit
