@@ -17,19 +17,19 @@ This is a TypeScript fork of [boleto.js](https://github.com/guilhermearaujo/bole
 ### npm
 
 ```bash
-npm install boleto.ts
+npm install @tiarebalbi/boleto.ts
 ```
 
 ### yarn
 
 ```bash
-yarn add boleto.ts
+yarn add @tiarebalbi/boleto.ts
 ```
 
 ### pnpm
 
 ```bash
-pnpm add boleto.ts
+pnpm add @tiarebalbi/boleto.ts
 ```
 
 ## Usage
@@ -37,7 +37,7 @@ pnpm add boleto.ts
 ### Basic Usage
 
 ```typescript
-import { Boleto } from 'boleto.ts';
+import { Boleto } from '@tiarebalbi/boleto.ts';
 
 const number = '34195.00008 01233.203189 64221.470004 5 84410000002000';
 const boleto = new Boleto(number);
@@ -56,7 +56,7 @@ console.log(svg);
 <div id="boleto"></div>
 
 <script type="module">
-  import { Boleto } from 'boleto.ts';
+  import { Boleto } from '@tiarebalbi/boleto.ts';
 
   const number = '34195.00008 01233.203189 64221.470004 5 84410000002000';
   new Boleto(number).toSVG('#boleto');
