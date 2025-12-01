@@ -1,6 +1,6 @@
 # Guia de Uso
 
-Este guia fornece detalhes técnicos e exemplos para usar a biblioteca `boleto.ts` para analisar e renderizar boletos bancários brasileiros.
+Este guia fornece detalhes técnicos e exemplos para usar a biblioteca `@tiarebalbi/boleto.ts` para analisar e renderizar boletos bancários brasileiros.
 
 ## Índice
 
@@ -23,19 +23,19 @@ Este guia fornece detalhes técnicos e exemplos para usar a biblioteca `boleto.t
 
 ```bash
 # npm
-npm install boleto.ts
+npm install @tiarebalbi/boleto.ts
 
 # yarn
-yarn add boleto.ts
+yarn add @tiarebalbi/boleto.ts
 
 # pnpm
-pnpm add boleto.ts
+pnpm add @tiarebalbi/boleto.ts
 ```
 
 ## Início Rápido
 
 ```typescript
-import { Boleto } from 'boleto.ts';
+import { Boleto } from '@tiarebalbi/boleto.ts';
 
 // Cria uma instância de boleto com o número impresso
 const boleto = new Boleto('23793.38128 86000.000009 00000.000380 1 84660000012345');
@@ -209,7 +209,7 @@ boleto.valid();
 ### Uso Básico
 
 ```typescript
-import { Boleto } from 'boleto.ts';
+import { Boleto } from '@tiarebalbi/boleto.ts';
 
 const numeroBoleto = '23793.38128 86000.000009 00000.000380 1 84660000012345';
 
@@ -258,7 +258,7 @@ try {
   </div>
 
   <script type="module">
-    import { Boleto } from 'boleto.ts';
+    import { Boleto } from '@tiarebalbi/boleto.ts';
     
     const numeroBoleto = '23793.38128 86000.000009 00000.000380 1 84660000012345';
     
@@ -284,7 +284,7 @@ try {
 ### Integração com Node.js
 
 ```typescript
-import { Boleto } from 'boleto.ts';
+import { Boleto } from '@tiarebalbi/boleto.ts';
 import { JSDOM } from 'jsdom';
 
 // Configura ambiente DOM para geração de SVG
@@ -322,7 +322,7 @@ try {
 
 ```tsx
 import React, { useEffect, useRef, useState } from 'react';
-import { Boleto } from 'boleto.ts';
+import { Boleto } from '@tiarebalbi/boleto.ts';
 
 interface BoletoViewerProps {
   numero: string;
@@ -408,7 +408,7 @@ export function VisualizadorBoleto({ numero }: BoletoViewerProps) {
 
 <script setup lang="ts">
 import { ref, computed, watch, onMounted } from 'vue';
-import { Boleto } from 'boleto.ts';
+import { Boleto } from '@tiarebalbi/boleto.ts';
 
 interface InfoBoleto {
   banco: string;
@@ -479,7 +479,7 @@ watch(() => props.numero, renderizarBoleto);
 A biblioteca lança um erro quando um número de boleto inválido é fornecido:
 
 ```typescript
-import { Boleto } from 'boleto.ts';
+import { Boleto } from '@tiarebalbi/boleto.ts';
 
 // Número inválido - tamanho incorreto
 try {
@@ -511,8 +511,8 @@ function validarNumeroBoleto(entrada: string): boolean {
 A biblioteca fornece suporte completo a TypeScript com tipos exportados:
 
 ```typescript
-import { Boleto } from 'boleto.ts';
-import type { Currency } from 'boleto.ts';
+import { Boleto } from '@tiarebalbi/boleto.ts';
+import type { Currency } from '@tiarebalbi/boleto.ts';
 
 // Todos os métodos são totalmente tipados
 const boleto = new Boleto('23793.38128 86000.000009 00000.000380 1 84660000012345');
