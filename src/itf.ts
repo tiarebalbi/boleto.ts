@@ -5,9 +5,10 @@
  */
 
 /**
- * Representations of each decimal digit
+ * Representations of each decimal digit (0-9) in ITF encoding
+ * Each digit is represented by 5 bars: 1 = narrow, 2 = wide
  */
-const WEIGHTS: readonly string[] = [
+const DIGIT_WEIGHTS: readonly string[] = [
   '11221', // 0
   '21112', // 1
   '12112', // 2
@@ -21,38 +22,77 @@ const WEIGHTS: readonly string[] = [
 ];
 
 /**
- * Representation of Start portion of the barcode
+ * Number of bars per digit in ITF encoding
  */
-const START = '1111';
+const BARS_PER_DIGIT = 5;
 
 /**
- * Representation of Stop portion of the barcode
+ * Regex pattern to split number into digit pairs
  */
-const STOP = '211';
+const DIGIT_PAIR_PATTERN = /(..?)/g;
 
 /**
- * Converts a pair of digits into their ITF representation and interleave them
- *
- * @param pair - The pair to be interleaved
- * @returns The input pair encoded into its ITF representation
- *
- * @example
- * // Returns "1211212112"
- * interleavePair('01');
+ * ITF barcode markers
  */
-function interleavePair(pair: string): string {
-  const pairNum = parseInt(pair, 10);
-  const black = WEIGHTS[Math.floor(pairNum / 10)];
-  const white = WEIGHTS[pairNum % 10];
+const ITFMarkers = {
+  /** Start marker pattern for ITF barcode */
+  START: '1111',
+  /** Stop marker pattern for ITF barcode */
+  STOP: '211',
+} as const;
 
-  let result = '';
+/**
+ * ITF Barcode Encoder
+ *
+ * Encapsulates the logic for encoding numbers into Interleaved 2 of 5 format.
+ */
+class ITFEncoder {
+  /**
+   * Converts a pair of digits into their ITF representation and interleaves them
+   *
+   * @param pair - The digit pair to be interleaved
+   * @returns The input pair encoded into its ITF representation
+   *
+   * @example
+   * // Returns "1211212112"
+   * ITFEncoder.interleavePair('01');
+   */
+  static interleavePair(pair: string): string {
+    const pairNum = parseInt(pair, 10);
+    const black = DIGIT_WEIGHTS[Math.floor(pairNum / 10)];
+    const white = DIGIT_WEIGHTS[pairNum % 10];
 
-  for (let i = 0; i < 5; i += 1) {
-    result += black[i];
-    result += white[i];
+    let result = '';
+
+    for (let i = 0; i < BARS_PER_DIGIT; i += 1) {
+      result += black[i];
+      result += white[i];
+    }
+
+    return result;
   }
 
-  return result;
+  /**
+   * Encodes a base-10 number into its Interleaved 2 of 5 (ITF) representation
+   *
+   * @param number - The number to be encoded
+   * @returns The input number encoded into its ITF representation
+   *
+   * @example
+   * // Returns "111121121111222121121112211222111112111122211121122211211"
+   * ITFEncoder.encode('1234567890');
+   */
+  static encode(number: string): string {
+    const pairs = number.match(DIGIT_PAIR_PATTERN);
+    if (!pairs) {
+      return ITFMarkers.START + ITFMarkers.STOP;
+    }
+    return (
+      ITFMarkers.START +
+      pairs.map(ITFEncoder.interleavePair).join('') +
+      ITFMarkers.STOP
+    );
+  }
 }
 
 /**
@@ -66,9 +106,5 @@ function interleavePair(pair: string): string {
  * encode('1234567890');
  */
 export function encode(number: string): string {
-  const pairs = number.match(/(..?)/g);
-  if (!pairs) {
-    return START + STOP;
-  }
-  return START + pairs.map(interleavePair).join('') + STOP;
+  return ITFEncoder.encode(number);
 }

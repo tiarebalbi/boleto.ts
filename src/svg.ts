@@ -5,6 +5,29 @@
  */
 
 /**
+ * SVG namespace URI for creating SVG elements
+ */
+const SVG_NAMESPACE = 'http://www.w3.org/2000/svg';
+
+/**
+ * Default stripe width in pixels
+ */
+const DEFAULT_STRIPE_WIDTH = 4;
+
+/**
+ * Default barcode height in pixels
+ */
+const DEFAULT_BARCODE_HEIGHT = 100;
+
+/**
+ * Barcode colors for alternating stripes
+ */
+const BarcodeColors = {
+  BLACK: '#000000',
+  WHITE: '#ffffff',
+} as const;
+
+/**
  * SVG Renderer for barcode stripes
  */
 export class SVG {
@@ -24,7 +47,7 @@ export class SVG {
    * @param stripes - The list of stripes to be drawn as a string of digits
    * @param stripeWidth - The width of a single-weighted stripe (default: 4)
    */
-  constructor(stripes: string, stripeWidth: number = 4) {
+  constructor(stripes: string, stripeWidth: number = DEFAULT_STRIPE_WIDTH) {
     this.stripes = stripes.split('').map((a) => parseInt(a, 10));
     this.stripeWidth = stripeWidth;
   }
@@ -42,19 +65,16 @@ export class SVG {
    * @returns null if selector is provided (SVG is appended to DOM), otherwise returns SVG string
    */
   render(selector?: string): string | null {
-    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    const svg = document.createElementNS(SVG_NAMESPACE, 'svg');
     let pos = 0;
     let width = 0;
 
     for (let i = 0; i < this.stripes.length; i += 1, pos += width) {
       width = this.stripeWidth * this.stripes[i];
 
-      const shape = document.createElementNS(
-        'http://www.w3.org/2000/svg',
-        'rect',
-      );
+      const shape = document.createElementNS(SVG_NAMESPACE, 'rect');
       shape.setAttribute('width', String(width));
-      shape.setAttribute('height', '100');
+      shape.setAttribute('height', String(DEFAULT_BARCODE_HEIGHT));
       shape.setAttribute('fill', SVG.color(i));
       shape.setAttribute('x', String(pos));
       shape.setAttribute('y', '0');
@@ -63,7 +83,10 @@ export class SVG {
 
     svg.setAttribute('width', '100%');
     svg.setAttribute('height', '100%');
-    svg.setAttribute('viewBox', `0 0 ${this.viewBoxWidth()} 100`);
+    svg.setAttribute(
+      'viewBox',
+      `0 0 ${this.viewBoxWidth()} ${DEFAULT_BARCODE_HEIGHT}`,
+    );
 
     if (selector === undefined) {
       return new XMLSerializer().serializeToString(svg);
@@ -103,6 +126,6 @@ export class SVG {
    * SVG.color(2);
    */
   static color(i: number): string {
-    return i % 2 ? '#ffffff' : '#000000';
+    return i % 2 ? BarcodeColors.WHITE : BarcodeColors.BLACK;
   }
 }

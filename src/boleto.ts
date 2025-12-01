@@ -21,6 +21,22 @@ export interface Currency {
 }
 
 /**
+ * Custom error class for boleto validation errors
+ *
+ * Provides a type-safe way to handle boleto-specific validation failures
+ */
+export class BoletoValidationError extends Error {
+  /** The invalid bank slip number that caused the error */
+  readonly bankSlipNumber: string;
+
+  constructor(message: string, bankSlipNumber: string) {
+    super(message);
+    this.name = 'BoletoValidationError';
+    this.bankSlipNumber = bankSlipNumber;
+  }
+}
+
+/**
  * Reference date epoch for boleto expiration calculation (1997-10-07 12:00:00 GMT-0300)
  */
 const BOLETO_EPOCH = 876236400000;
@@ -29,6 +45,30 @@ const BOLETO_EPOCH = 876236400000;
  * Number of milliseconds in a day
  */
 const MILLISECONDS_PER_DAY = 86400000;
+
+/**
+ * Expected length of a valid bank slip number
+ */
+const BANK_SLIP_NUMBER_LENGTH = 47;
+
+/**
+ * Position of checksum digit in barcode (0-indexed)
+ */
+const BARCODE_CHECKSUM_POSITION = 4;
+
+/**
+ * Position of currency code in barcode (0-indexed)
+ */
+const BARCODE_CURRENCY_POSITION = 3;
+
+/**
+ * Brazilian Real currency configuration
+ */
+const BRL_CURRENCY: Currency = {
+  code: 'BRL',
+  symbol: 'R$',
+  decimal: ',',
+};
 
 /**
  * Bank codes and their corresponding names
@@ -71,13 +111,16 @@ export class Boleto {
    * Initializes the Boleto class
    *
    * @param bankSlipNumber - The bank slip number (can include non-digit characters which will be stripped)
-   * @throws Error if the bank slip number is invalid
+   * @throws BoletoValidationError if the bank slip number is invalid
    */
   constructor(bankSlipNumber: string) {
     this.bankSlipNumber = bankSlipNumber.replace(/[^\d]/g, '');
 
     if (!this.valid()) {
-      throw new Error('Invalid bank slip number');
+      throw new BoletoValidationError(
+        'Invalid bank slip number',
+        this.bankSlipNumber,
+      );
     }
   }
 
@@ -92,10 +135,10 @@ export class Boleto {
    * @returns Whether the bank slip number is valid or not
    */
   valid(): boolean {
-    if (this.bankSlipNumber.length !== 47) return false;
+    if (this.bankSlipNumber.length !== BANK_SLIP_NUMBER_LENGTH) return false;
 
     const barcodeDigits = this.barcode().split('');
-    const [checksum] = barcodeDigits.splice(4, 1);
+    const [checksum] = barcodeDigits.splice(BARCODE_CHECKSUM_POSITION, 1);
 
     return modulo11(barcodeDigits).toString() === checksum;
   }
@@ -161,14 +204,14 @@ export class Boleto {
    * The currency is determined by the currency code, the fourth digit of the
    * barcode. A list of values other than 9 (Brazilian Real) could not be found.
    *
-   * @returns The currency object or 'Unknown' string
+   * @returns The currency object or null if currency is unknown
    */
-  currency(): Currency | 'Unknown' {
-    const currencyCode = this.barcode()[3];
+  currency(): Currency | null {
+    const currencyCode = this.barcode()[BARCODE_CURRENCY_POSITION];
     if (currencyCode === '9') {
-      return { code: 'BRL', symbol: 'R$', decimal: ',' };
+      return BRL_CURRENCY;
     }
-    return 'Unknown';
+    return null;
   }
 
   /**
@@ -179,7 +222,7 @@ export class Boleto {
    * @returns The checksum of the barcode
    */
   checksum(): string {
-    return this.barcode()[4];
+    return this.barcode()[BARCODE_CHECKSUM_POSITION];
   }
 
   /**
@@ -217,7 +260,7 @@ export class Boleto {
   prettyAmount(): string {
     const currencyResult = this.currency();
 
-    if (currencyResult === 'Unknown') {
+    if (currencyResult === null) {
       return this.amount();
     }
 
