@@ -95,8 +95,7 @@ export class Boleto {
     if (this.bankSlipNumber.length !== 47) return false;
 
     const barcodeDigits = this.barcode().split('');
-    const checksumArray = barcodeDigits.splice(4, 1);
-    const checksum = checksumArray[0];
+    const [checksum] = barcodeDigits.splice(4, 1);
 
     return modulo11(barcodeDigits).toString() === checksum;
   }
