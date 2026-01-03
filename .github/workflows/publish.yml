@@ -1,3 +1,10 @@
+# This workflow automatically publishes the package to GitHub Packages when a release is created.
+# The release tag should be the version number (e.g., v1.0.0 or 1.0.0).
+# The workflow will:
+# 1. Extract the version from the release tag
+# 2. Run tests to ensure quality
+# 3. Build the package
+# 4. Publish to GitHub Packages
 name: Publish Package
 
 on:
