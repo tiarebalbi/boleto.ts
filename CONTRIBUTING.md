@@ -279,8 +279,35 @@ describe('Boleto', () => {
 Releases are handled by project maintainers:
 
 1. Version bumping follows [Semantic Versioning](https://semver.org/)
-2. CI automatically publishes releases to GitHub Packages
-3. Release notes are generated from commit messages
+2. To create a release:
+   - Tag the commit with the version number (e.g., `v1.0.0` or `1.0.0`)
+   - Create a GitHub release using that tag
+   - The tag name should match the version number (with or without `v` prefix)
+3. When a release is created on GitHub:
+   - The CI workflow automatically runs tests and builds the package
+   - The package version is set to match the release tag
+   - The package is automatically published to GitHub Packages
+4. Release notes are generated from commit messages
+
+### Creating a Release (Maintainers)
+
+```bash
+# 1. Ensure you're on the main branch
+git checkout main
+git pull origin main
+
+# 2. Create and push a tag
+git tag v1.0.0
+git push origin v1.0.0
+
+# 3. Create a release on GitHub
+# Go to: https://github.com/tiarebalbi/boleto.ts/releases/new
+# - Select the tag you just pushed
+# - Write release notes describing the changes
+# - Click "Publish release"
+
+# The package will be automatically published to GitHub Packages
+```
 
 ---
 

@@ -1,9 +1,15 @@
+# This workflow automatically publishes the package to GitHub Packages when a release is created.
+# The release tag should be the version number (e.g., v1.0.0 or 1.0.0).
+# The workflow will:
+# 1. Extract the version from the release tag
+# 2. Run tests to ensure quality
+# 3. Build the package
+# 4. Publish to GitHub Packages
 name: Publish Package
 
 on:
-  push:
-    tags:
-      - '*'
+  release:
+    types: [created]
 
 jobs:
   publish:
@@ -24,9 +30,9 @@ jobs:
           registry-url: 'https://npm.pkg.github.com'
           scope: '@tiarebalbi'
 
-      - name: Set package version from tag
+      - name: Set package version from release tag
         run: |
-          TAG_VERSION="${GITHUB_REF#refs/tags/}"
+          TAG_VERSION="${{ github.event.release.tag_name }}"
           # Remove 'v' prefix if present (e.g., v1.0.0 -> 1.0.0)
           VERSION="${TAG_VERSION#v}"
           # Validate that the version follows semver pattern
