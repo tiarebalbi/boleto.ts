@@ -4,6 +4,7 @@
 
 import { describe, it, expect, beforeEach } from 'vitest';
 import { SVG } from './svg.ts';
+import type { BarcodeData, BarcodeStripe } from './svg.ts';
 
 describe('SVG', () => {
   describe('constructor', () => {
@@ -51,6 +52,127 @@ describe('SVG', () => {
       expect(SVG.color(1)).toBe('#ffffff');
       expect(SVG.color(3)).toBe('#ffffff');
       expect(SVG.color(99)).toBe('#ffffff');
+    });
+  });
+
+  describe('toBarcodeData', () => {
+    it('should return structured barcode data', () => {
+      const svg = new SVG('12', 4);
+      const data: BarcodeData = svg.toBarcodeData();
+
+      expect(data.viewBoxWidth).toBe(12); // (1+2)*4 = 12
+      expect(data.viewBoxHeight).toBe(100);
+      expect(data.stripes).toHaveLength(2);
+    });
+
+    it('should calculate correct stripe positions and dimensions', () => {
+      const svg = new SVG('12', 4);
+      const data = svg.toBarcodeData();
+
+      const first: BarcodeStripe = data.stripes[0];
+      expect(first.x).toBe(0);
+      expect(first.width).toBe(4); // 4 * 1
+      expect(first.height).toBe(100);
+      expect(first.color).toBe('#000000'); // even index = black
+
+      const second: BarcodeStripe = data.stripes[1];
+      expect(second.x).toBe(4);
+      expect(second.width).toBe(8); // 4 * 2
+      expect(second.height).toBe(100);
+      expect(second.color).toBe('#ffffff'); // odd index = white
+    });
+
+    it('should handle empty stripes', () => {
+      const svg = new SVG('', 4);
+      const data = svg.toBarcodeData();
+
+      expect(data.stripes).toHaveLength(0);
+      expect(data.viewBoxWidth).toBe(0);
+      expect(data.viewBoxHeight).toBe(100);
+    });
+
+    it('should handle multiple stripes with correct cumulative positions', () => {
+      const svg = new SVG('1234', 4);
+      const data = svg.toBarcodeData();
+
+      expect(data.stripes[0].x).toBe(0);
+      expect(data.stripes[1].x).toBe(4); // 0 + 4*1
+      expect(data.stripes[2].x).toBe(12); // 4 + 4*2
+      expect(data.stripes[3].x).toBe(24); // 12 + 4*3
+    });
+
+    it('should use custom stripe width', () => {
+      const svg = new SVG('12', 8);
+      const data = svg.toBarcodeData();
+
+      expect(data.stripes[0].width).toBe(8); // 8 * 1
+      expect(data.stripes[1].width).toBe(16); // 8 * 2
+      expect(data.viewBoxWidth).toBe(24); // (1+2)*8
+    });
+  });
+
+  describe('toSVGString', () => {
+    it('should return valid SVG markup as string', () => {
+      const svg = new SVG('12', 4);
+      const result = svg.toSVGString();
+
+      expect(result).toContain('<svg');
+      expect(result).toContain('</svg>');
+      expect(result).toContain('<rect');
+      expect(result).toContain('xmlns="http://www.w3.org/2000/svg"');
+    });
+
+    it('should include correct viewBox', () => {
+      const svg = new SVG('12', 4);
+      const result = svg.toSVGString();
+
+      expect(result).toContain('viewBox="0 0 12 100"');
+    });
+
+    it('should include correct dimensions', () => {
+      const svg = new SVG('12', 4);
+      const result = svg.toSVGString();
+
+      expect(result).toContain('width="100%"');
+      expect(result).toContain('height="100%"');
+    });
+
+    it('should include correct rect attributes', () => {
+      const svg = new SVG('12', 4);
+      const result = svg.toSVGString();
+
+      // Parse as XML to verify structure
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(result, 'image/svg+xml');
+      const rects = doc.querySelectorAll('rect');
+
+      expect(rects).toHaveLength(2);
+
+      expect(rects[0].getAttribute('width')).toBe('4');
+      expect(rects[0].getAttribute('x')).toBe('0');
+      expect(rects[0].getAttribute('fill')).toBe('#000000');
+      expect(rects[0].getAttribute('height')).toBe('100');
+
+      expect(rects[1].getAttribute('width')).toBe('8');
+      expect(rects[1].getAttribute('x')).toBe('4');
+      expect(rects[1].getAttribute('fill')).toBe('#ffffff');
+    });
+
+    it('should handle empty stripes', () => {
+      const svg = new SVG('', 4);
+      const result = svg.toSVGString();
+
+      expect(result).toContain('<svg');
+      expect(result).not.toContain('<rect');
+    });
+
+    it('should produce consistent output with render() when no selector', () => {
+      const svg = new SVG('12', 4);
+      const stringResult = svg.toSVGString();
+      const renderResult = svg.render();
+
+      // Both should return the same SVG string
+      expect(renderResult).toBe(stringResult);
     });
   });
 

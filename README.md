@@ -70,41 +70,25 @@ console.log(svg);
 ### React Component
 
 ```tsx
-import { useEffect, useRef, useState } from 'react';
+import { useMemo } from 'react';
 import { Boleto } from '@tiare.balbi/boleto.ts';
+import type { BarcodeData } from '@tiare.balbi/boleto.ts';
 
-interface BoletoViewerProps {
-  number: string;
-}
-
-export function BoletoViewer({ number }: BoletoViewerProps) {
-  const barcodeRef = useRef<HTMLDivElement>(null);
-  const [info, setInfo] = useState<{
-    bank: string;
-    prettyAmount: string;
-    prettyNumber: string;
-  } | null>(null);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
+export function BoletoViewer({ number }: { number: string }) {
+  const { data, info, error } = useMemo(() => {
     try {
       const boleto = new Boleto(number);
-
-      setInfo({
-        bank: boleto.bank(),
-        prettyAmount: boleto.prettyAmount(),
-        prettyNumber: boleto.prettyNumber(),
-      });
-
-      if (barcodeRef.current) {
-        barcodeRef.current.innerHTML = '';
-        boleto.toSVG(`#${barcodeRef.current.id}`);
-      }
-
-      setError(null);
+      return {
+        data: boleto.barcodeData(),
+        info: {
+          bank: boleto.bank(),
+          prettyAmount: boleto.prettyAmount(),
+          prettyNumber: boleto.prettyNumber(),
+        },
+        error: null,
+      };
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Invalid boleto number');
-      setInfo(null);
+      return { data: null, info: null, error: (err as Error).message };
     }
   }, [number]);
 
@@ -112,7 +96,7 @@ export function BoletoViewer({ number }: BoletoViewerProps) {
 
   return (
     <div>
-      <div id="boleto-barcode" ref={barcodeRef} />
+      {data && <BarcodeImage data={data} />}
       {info && (
         <div>
           <p>Bank: {info.bank}</p>
@@ -121,6 +105,27 @@ export function BoletoViewer({ number }: BoletoViewerProps) {
         </div>
       )}
     </div>
+  );
+}
+
+function BarcodeImage({ data }: { data: BarcodeData }) {
+  return (
+    <svg
+      viewBox={`0 0 ${data.viewBoxWidth} ${data.viewBoxHeight}`}
+      width="100%"
+      height="100%"
+    >
+      {data.stripes.map((stripe, i) => (
+        <rect
+          key={i}
+          x={stripe.x}
+          y={0}
+          width={stripe.width}
+          height={stripe.height}
+          fill={stripe.color}
+        />
+      ))}
+    </svg>
   );
 }
 
@@ -133,8 +138,22 @@ export function BoletoViewer({ number }: BoletoViewerProps) {
 <template>
   <div>
     <div v-if="error" class="error">{{ error }}</div>
-    <template v-else>
-      <div ref="barcodeContainer" class="barcode"></div>
+    <template v-else-if="data">
+      <svg
+        :viewBox="`0 0 ${data.viewBoxWidth} ${data.viewBoxHeight}`"
+        width="100%"
+        height="100%"
+      >
+        <rect
+          v-for="(stripe, i) in data.stripes"
+          :key="i"
+          :x="stripe.x"
+          y="0"
+          :width="stripe.width"
+          :height="stripe.height"
+          :fill="stripe.color"
+        />
+      </svg>
       <div v-if="info">
         <p><strong>Bank:</strong> {{ info.bank }}</p>
         <p><strong>Amount:</strong> {{ info.prettyAmount }}</p>
@@ -145,45 +164,48 @@ export function BoletoViewer({ number }: BoletoViewerProps) {
 </template>
 
 <script setup lang="ts">
-import { ref, watch, onMounted } from 'vue';
+import { computed } from 'vue';
 import { Boleto } from '@tiare.balbi/boleto.ts';
 
 const props = defineProps<{ number: string }>();
 
-const barcodeContainer = ref<HTMLDivElement | null>(null);
-const info = ref<{
-  bank: string;
-  prettyAmount: string;
-  prettyNumber: string;
-} | null>(null);
-const error = ref<string | null>(null);
-
-function renderBoleto() {
+const boleto = computed(() => {
   try {
-    const boleto = new Boleto(props.number);
-
-    info.value = {
-      bank: boleto.bank(),
-      prettyAmount: boleto.prettyAmount(),
-      prettyNumber: boleto.prettyNumber(),
-    };
-
-    if (barcodeContainer.value) {
-      barcodeContainer.value.innerHTML = '';
-      const svg = boleto.toSVG();
-      if (svg) barcodeContainer.value.innerHTML = svg;
-    }
-
-    error.value = null;
-  } catch (err) {
-    error.value = err instanceof Error ? err.message : 'Invalid boleto number';
-    info.value = null;
+    return new Boleto(props.number);
+  } catch {
+    return null;
   }
-}
+});
 
-onMounted(renderBoleto);
-watch(() => props.number, renderBoleto);
+const data = computed(() => boleto.value?.barcodeData() ?? null);
+const info = computed(() =>
+  boleto.value
+    ? {
+        bank: boleto.value.bank(),
+        prettyAmount: boleto.value.prettyAmount(),
+        prettyNumber: boleto.value.prettyNumber(),
+      }
+    : null,
+);
+const error = computed(() => (boleto.value ? null : 'Invalid boleto number'));
 </script>
+```
+
+### SSR / Astro
+
+The `toSVG()` method (without a selector) and `barcodeData()` work without a DOM environment, making them safe for server-side rendering:
+
+```astro
+---
+import { Boleto } from '@tiare.balbi/boleto.ts';
+
+const boleto = new Boleto('23793.38128 86000.000009 00000.000380 1 84660000012345');
+const svgString = boleto.toSVG();
+---
+
+<div set:html={svgString} />
+<p>Bank: {boleto.bank()}</p>
+<p>Amount: {boleto.prettyAmount()}</p>
 ```
 
 The boleto number can contain only digits or be formatted with dots and spaces. The library will filter and validate the digits before rendering the barcode.
