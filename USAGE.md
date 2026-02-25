@@ -1,6 +1,6 @@
 # Usage Guide
 
-This guide provides technical details and examples for using the `@tiarebalbi/boleto.ts` library to parse and render Brazilian bank payment slips (boletos bancários).
+This guide provides technical details and examples for using the `@tiare.balbi/boleto.ts` library to parse and render Brazilian bank payment slips (boletos bancários).
 
 ## Table of Contents
 
@@ -23,19 +23,19 @@ This guide provides technical details and examples for using the `@tiarebalbi/bo
 
 ```bash
 # npm
-npm install @tiarebalbi/boleto.ts
+npm install @tiare.balbi/boleto.ts
 
 # yarn
-yarn add @tiarebalbi/boleto.ts
+yarn add @tiare.balbi/boleto.ts
 
 # pnpm
-pnpm add @tiarebalbi/boleto.ts
+pnpm add @tiare.balbi/boleto.ts
 ```
 
 ## Quick Start
 
 ```typescript
-import { Boleto } from '@tiarebalbi/boleto.ts';
+import { Boleto } from '@tiare.balbi/boleto.ts';
 
 // Create a boleto instance with the printed number
 const boleto = new Boleto(
@@ -239,7 +239,7 @@ boleto.valid();
 ### Basic Usage
 
 ```typescript
-import { Boleto } from '@tiarebalbi/boleto.ts';
+import { Boleto } from '@tiare.balbi/boleto.ts';
 
 const boletoNumber = '23793.38128 86000.000009 00000.000380 1 84660000012345';
 
@@ -288,7 +288,7 @@ try {
     </div>
 
     <script type="module">
-      import { Boleto } from '@tiarebalbi/boleto.ts';
+      import { Boleto } from '@tiare.balbi/boleto.ts';
 
       const boletoNumber =
         '23793.38128 86000.000009 00000.000380 1 84660000012345';
@@ -317,7 +317,7 @@ try {
 ### Node.js Integration
 
 ```typescript
-import { Boleto } from '@tiarebalbi/boleto.ts';
+import { Boleto } from '@tiare.balbi/boleto.ts';
 import { JSDOM } from 'jsdom';
 
 // Set up DOM environment for SVG generation
@@ -355,7 +355,7 @@ try {
 
 ```tsx
 import React, { useEffect, useRef, useState } from 'react';
-import { Boleto } from '@tiarebalbi/boleto.ts';
+import { Boleto } from '@tiare.balbi/boleto.ts';
 
 interface BoletoViewerProps {
   number: string;
@@ -454,7 +454,7 @@ export function BoletoViewer({ number }: BoletoViewerProps) {
 
 <script setup lang="ts">
 import { ref, computed, watch, onMounted } from 'vue';
-import { Boleto } from '@tiarebalbi/boleto.ts';
+import { Boleto } from '@tiare.balbi/boleto.ts';
 
 interface BoletoInfo {
   bank: string;
@@ -525,7 +525,7 @@ watch(() => props.number, renderBoleto);
 The library throws a `BoletoValidationError` when an invalid boleto number is provided. This custom error class extends `Error` and includes the invalid bank slip number for debugging purposes:
 
 ```typescript
-import { Boleto, BoletoValidationError } from '@tiarebalbi/boleto.ts';
+import { Boleto, BoletoValidationError } from '@tiare.balbi/boleto.ts';
 
 // Invalid number - wrong length
 try {
@@ -576,8 +576,8 @@ function processBoletoDaSafely(input: string): string | null {
 The library provides full TypeScript support with exported types:
 
 ```typescript
-import { Boleto, BoletoValidationError } from '@tiarebalbi/boleto.ts';
-import type { Currency } from '@tiarebalbi/boleto.ts';
+import { Boleto, BoletoValidationError } from '@tiare.balbi/boleto.ts';
+import type { Currency } from '@tiare.balbi/boleto.ts';
 
 // All methods are fully typed
 const boleto = new Boleto(

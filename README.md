@@ -1,5 +1,9 @@
 # boleto.ts
 
+[![npm version](https://img.shields.io/npm/v/@tiare.balbi/boleto.ts)](https://www.npmjs.com/package/@tiare.balbi/boleto.ts)
+[![npm downloads](https://img.shields.io/npm/dm/@tiare.balbi/boleto.ts)](https://www.npmjs.com/package/@tiare.balbi/boleto.ts)
+[![License: MIT](https://img.shields.io/npm/l/@tiare.balbi/boleto.ts)](https://github.com/tiarebalbi/boleto.ts/blob/main/LICENSE)
+
 A TypeScript library for parsing and rendering Brazilian bank payment slips (boletos bancários).
 
 This is a TypeScript fork of [boleto.js](https://github.com/guilhermearaujo/boleto.js), providing full type safety and modern ES module support.
@@ -17,19 +21,19 @@ This is a TypeScript fork of [boleto.js](https://github.com/guilhermearaujo/bole
 ### npm
 
 ```bash
-npm install @tiarebalbi/boleto.ts
+npm install @tiare.balbi/boleto.ts
 ```
 
 ### yarn
 
 ```bash
-yarn add @tiarebalbi/boleto.ts
+yarn add @tiare.balbi/boleto.ts
 ```
 
 ### pnpm
 
 ```bash
-pnpm add @tiarebalbi/boleto.ts
+pnpm add @tiare.balbi/boleto.ts
 ```
 
 ## Usage
@@ -37,7 +41,7 @@ pnpm add @tiarebalbi/boleto.ts
 ### Basic Usage
 
 ```typescript
-import { Boleto } from '@tiarebalbi/boleto.ts';
+import { Boleto } from '@tiare.balbi/boleto.ts';
 
 const number = '34195.00008 01233.203189 64221.470004 5 84410000002000';
 const boleto = new Boleto(number);
@@ -56,7 +60,7 @@ console.log(svg);
 <div id="boleto"></div>
 
 <script type="module">
-  import { Boleto } from '@tiarebalbi/boleto.ts';
+  import { Boleto } from '@tiare.balbi/boleto.ts';
 
   const number = '34195.00008 01233.203189 64221.470004 5 84410000002000';
   new Boleto(number).toSVG('#boleto');
