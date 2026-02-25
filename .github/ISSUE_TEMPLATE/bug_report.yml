@@ -1,0 +1,93 @@
+name: Bug Report
+description: Report a bug in boleto.ts
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for reporting a bug! Please fill out the sections below so we can reproduce and fix the issue.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: A clear and concise description of what the bug is.
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to Reproduce
+      description: Steps to reproduce the behavior.
+      placeholder: |
+        1. Import '...'
+        2. Call '...' with '...'
+        3. See error
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Behavior
+      description: What you expected to happen.
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual Behavior
+      description: What actually happened. Include any error messages or stack traces.
+    validations:
+      required: true
+
+  - type: textarea
+    id: code-sample
+    attributes:
+      label: Code Sample / Boleto Number
+      description: If applicable, provide a minimal code sample or boleto number that demonstrates the issue.
+      render: typescript
+
+  - type: input
+    id: version
+    attributes:
+      label: Library Version
+      description: Which version of boleto.ts are you using?
+      placeholder: e.g. 0.1.0
+    validations:
+      required: true
+
+  - type: input
+    id: node-version
+    attributes:
+      label: Node.js Version
+      placeholder: e.g. 20.11.0
+
+  - type: input
+    id: os
+    attributes:
+      label: Operating System
+      placeholder: e.g. macOS 14.3, Ubuntu 22.04, Windows 11
+
+  - type: dropdown
+    id: environment
+    attributes:
+      label: Environment
+      options:
+        - Node.js
+        - Browser
+        - Both
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      options:
+        - label: I have searched for existing issues that already report this bug.
+          required: true
+        - label: I have provided all the information needed to reproduce this bug.
+          required: true
