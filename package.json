@@ -1,5 +1,5 @@
 {
-  "name": "@tiarebalbi/boleto.ts",
+  "name": "@tiare.balbi/boleto.ts",
   "version": "0.1.0",
   "description": "A TypeScript library for parsing and rendering Brazilian bank payment slips (boletos bancários)",
   "type": "module",
