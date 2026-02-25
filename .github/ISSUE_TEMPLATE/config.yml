@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Ask a Question
+    url: https://github.com/tiarebalbi/boleto.ts/issues?q=label%3Aquestion
+    about: Browse or open an issue with the "question" label.
