@@ -354,8 +354,9 @@ try {
 ### React Component
 
 ```tsx
-import React, { useEffect, useRef, useState } from 'react';
+import { useMemo } from 'react';
 import { Boleto } from '@tiare.balbi/boleto.ts';
+import type { BarcodeData } from '@tiare.balbi/boleto.ts';
 
 interface BoletoViewerProps {
   number: string;
@@ -369,32 +370,49 @@ interface BoletoInfo {
   prettyNumber: string;
 }
 
-export function BoletoViewer({ number }: BoletoViewerProps) {
-  const barcodeRef = useRef<HTMLDivElement>(null);
-  const [info, setInfo] = useState<BoletoInfo | null>(null);
-  const [error, setError] = useState<string | null>(null);
+function BarcodeImage({ data }: { data: BarcodeData }) {
+  return (
+    <svg
+      viewBox={`0 0 ${data.viewBoxWidth} ${data.viewBoxHeight}`}
+      width="100%"
+      height="100%"
+      style={{ maxWidth: '400px', height: '80px' }}
+    >
+      {data.stripes.map((stripe, i) => (
+        <rect
+          key={i}
+          x={stripe.x}
+          y={0}
+          width={stripe.width}
+          height={stripe.height}
+          fill={stripe.color}
+        />
+      ))}
+    </svg>
+  );
+}
 
-  useEffect(() => {
+export function BoletoViewer({ number }: BoletoViewerProps) {
+  const { data, info, error } = useMemo(() => {
     try {
       const boleto = new Boleto(number);
-
-      setInfo({
-        bank: boleto.bank(),
-        amount: boleto.amount(),
-        prettyAmount: boleto.prettyAmount(),
-        expirationDate: boleto.expirationDate(),
-        prettyNumber: boleto.prettyNumber(),
-      });
-
-      if (barcodeRef.current) {
-        barcodeRef.current.innerHTML = '';
-        boleto.toSVG(`#${barcodeRef.current.id}`);
-      }
-
-      setError(null);
+      return {
+        data: boleto.barcodeData(),
+        info: {
+          bank: boleto.bank(),
+          amount: boleto.amount(),
+          prettyAmount: boleto.prettyAmount(),
+          expirationDate: boleto.expirationDate(),
+          prettyNumber: boleto.prettyNumber(),
+        } as BoletoInfo,
+        error: null,
+      };
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Invalid boleto number');
-      setInfo(null);
+      return {
+        data: null,
+        info: null,
+        error: err instanceof Error ? err.message : 'Invalid boleto number',
+      };
     }
   }, [number]);
 
@@ -404,11 +422,7 @@ export function BoletoViewer({ number }: BoletoViewerProps) {
 
   return (
     <div className="boleto-viewer">
-      <div
-        id="boleto-barcode"
-        ref={barcodeRef}
-        style={{ width: '100%', height: '80px' }}
-      />
+      {data && <BarcodeImage data={data} />}
       {info && (
         <div className="boleto-info">
           <p>
@@ -440,8 +454,23 @@ export function BoletoViewer({ number }: BoletoViewerProps) {
 <template>
   <div class="boleto-viewer">
     <div v-if="error" class="error">{{ error }}</div>
-    <template v-else>
-      <div ref="barcodeContainer" class="barcode"></div>
+    <template v-else-if="data">
+      <svg
+        :viewBox="`0 0 ${data.viewBoxWidth} ${data.viewBoxHeight}`"
+        width="100%"
+        height="100%"
+        class="barcode"
+      >
+        <rect
+          v-for="(stripe, i) in data.stripes"
+          :key="i"
+          :x="stripe.x"
+          y="0"
+          :width="stripe.width"
+          :height="stripe.height"
+          :fill="stripe.color"
+        />
+      </svg>
       <div v-if="info" class="boleto-info">
         <p><strong>Bank:</strong> {{ info.bank }}</p>
         <p><strong>Amount:</strong> {{ info.prettyAmount }}</p>
@@ -453,7 +482,7 @@ export function BoletoViewer({ number }: BoletoViewerProps) {
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted } from 'vue';
+import { computed } from 'vue';
 import { Boleto } from '@tiare.balbi/boleto.ts';
 
 interface BoletoInfo {
@@ -468,43 +497,33 @@ const props = defineProps<{
   number: string;
 }>();
 
-const barcodeContainer = ref<HTMLDivElement | null>(null);
-const info = ref<BoletoInfo | null>(null);
-const error = ref<string | null>(null);
+const boleto = computed(() => {
+  try {
+    return new Boleto(props.number);
+  } catch {
+    return null;
+  }
+});
+
+const data = computed(() => boleto.value?.barcodeData() ?? null);
+
+const info = computed<BoletoInfo | null>(() =>
+  boleto.value
+    ? {
+        bank: boleto.value.bank(),
+        amount: boleto.value.amount(),
+        prettyAmount: boleto.value.prettyAmount(),
+        expirationDate: boleto.value.expirationDate(),
+        prettyNumber: boleto.value.prettyNumber(),
+      }
+    : null,
+);
+
+const error = computed(() => (boleto.value ? null : 'Invalid boleto number'));
 
 const formattedDate = computed(() => {
   return info.value?.expirationDate.toLocaleDateString('pt-BR') ?? '';
 });
-
-function renderBoleto() {
-  try {
-    const boleto = new Boleto(props.number);
-
-    info.value = {
-      bank: boleto.bank(),
-      amount: boleto.amount(),
-      prettyAmount: boleto.prettyAmount(),
-      expirationDate: boleto.expirationDate(),
-      prettyNumber: boleto.prettyNumber(),
-    };
-
-    if (barcodeContainer.value) {
-      barcodeContainer.value.innerHTML = '';
-      const svg = boleto.toSVG();
-      if (svg) {
-        barcodeContainer.value.innerHTML = svg;
-      }
-    }
-
-    error.value = null;
-  } catch (err) {
-    error.value = err instanceof Error ? err.message : 'Invalid boleto number';
-    info.value = null;
-  }
-}
-
-onMounted(renderBoleto);
-watch(() => props.number, renderBoleto);
 </script>
 
 <style scoped>

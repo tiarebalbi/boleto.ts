@@ -5,6 +5,7 @@
  */
 
 import { SVG } from './svg.ts';
+import type { BarcodeData } from './svg.ts';
 import { encode } from './itf.ts';
 import { modulo11 } from './helpers.ts';
 
@@ -728,6 +729,31 @@ export class Boleto {
     }
 
     return `${currencyResult.symbol} ${this.amount().replace('.', currencyResult.decimal)}`;
+  }
+
+  /**
+   * Returns structured barcode data for framework-native rendering
+   *
+   * Use this method when integrating with frameworks like React, Vue, or Astro
+   * to render the barcode using framework-native components instead of direct
+   * DOM manipulation.
+   *
+   * @returns The barcode data with stripe positions, dimensions, and colors
+   *
+   * @example
+   * ```tsx
+   * // React
+   * const data = boleto.barcodeData();
+   * <svg viewBox={`0 0 ${data.viewBoxWidth} ${data.viewBoxHeight}`}>
+   *   {data.stripes.map((s, i) => <rect key={i} {...s} y={0} />)}
+   * </svg>
+   * ```
+   *
+   * @see {@link SVG.toBarcodeData}
+   */
+  barcodeData(): BarcodeData {
+    const stripes = encode(this.barcode());
+    return new SVG(stripes).toBarcodeData();
   }
 
   /**

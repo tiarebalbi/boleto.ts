@@ -10,7 +10,7 @@ import {
   encode,
   modulo11,
 } from './main.ts';
-import type { Currency } from './main.ts';
+import type { Currency, BarcodeStripe, BarcodeData } from './main.ts';
 
 describe('main exports', () => {
   it('should export Boleto class', () => {
@@ -45,5 +45,26 @@ describe('main exports', () => {
       decimal: ',',
     };
     expect(currency.code).toBe('BRL');
+  });
+
+  it('should allow using BarcodeStripe type', () => {
+    const stripe: BarcodeStripe = {
+      x: 0,
+      width: 4,
+      height: 100,
+      color: '#000000',
+    };
+    expect(stripe.x).toBe(0);
+    expect(stripe.width).toBe(4);
+  });
+
+  it('should allow using BarcodeData type', () => {
+    const data: BarcodeData = {
+      stripes: [{ x: 0, width: 4, height: 100, color: '#000000' }],
+      viewBoxWidth: 4,
+      viewBoxHeight: 100,
+    };
+    expect(data.stripes).toHaveLength(1);
+    expect(data.viewBoxWidth).toBe(4);
   });
 });

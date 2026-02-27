@@ -211,6 +211,41 @@ describe('Boleto', () => {
     });
   });
 
+  describe('barcodeData', () => {
+    it('should return structured barcode data', () => {
+      const boleto = new Boleto(VALID_BOLETO);
+      const data = boleto.barcodeData();
+
+      expect(data.stripes).toBeDefined();
+      expect(Array.isArray(data.stripes)).toBe(true);
+      expect(data.stripes.length).toBeGreaterThan(0);
+      expect(data.viewBoxWidth).toBeGreaterThan(0);
+      expect(data.viewBoxHeight).toBe(100);
+    });
+
+    it('should return stripes with correct properties', () => {
+      const boleto = new Boleto(VALID_BOLETO);
+      const data = boleto.barcodeData();
+
+      const firstStripe = data.stripes[0];
+      expect(firstStripe).toHaveProperty('x');
+      expect(firstStripe).toHaveProperty('width');
+      expect(firstStripe).toHaveProperty('height');
+      expect(firstStripe).toHaveProperty('color');
+      expect(firstStripe.x).toBe(0);
+      expect(firstStripe.height).toBe(100);
+    });
+
+    it('should alternate colors between black and white', () => {
+      const boleto = new Boleto(VALID_BOLETO);
+      const data = boleto.barcodeData();
+
+      expect(data.stripes[0].color).toBe('#000000');
+      expect(data.stripes[1].color).toBe('#ffffff');
+      expect(data.stripes[2].color).toBe('#000000');
+    });
+  });
+
   describe('toSVG', () => {
     beforeEach(() => {
       document.body.innerHTML = '';

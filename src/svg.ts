@@ -28,6 +28,48 @@ const BarcodeColors = {
 } as const;
 
 /**
+ * Represents a single stripe in the barcode
+ */
+export interface BarcodeStripe {
+  /** X position of the stripe */
+  x: number;
+  /** Width of the stripe */
+  width: number;
+  /** Height of the stripe */
+  height: number;
+  /** Fill color of the stripe in hex format */
+  color: string;
+}
+
+/**
+ * Structured barcode data for framework-native rendering
+ *
+ * Use this to render barcodes with React JSX, Vue templates, or any other
+ * framework without direct DOM manipulation.
+ *
+ * @example
+ * ```tsx
+ * // React example
+ * const data = boleto.barcodeData();
+ * return (
+ *   <svg viewBox={`0 0 ${data.viewBoxWidth} ${data.viewBoxHeight}`} width="100%" height="100%">
+ *     {data.stripes.map((stripe, i) => (
+ *       <rect key={i} x={stripe.x} y={0} width={stripe.width} height={stripe.height} fill={stripe.color} />
+ *     ))}
+ *   </svg>
+ * );
+ * ```
+ */
+export interface BarcodeData {
+  /** Array of stripe data for rendering */
+  stripes: BarcodeStripe[];
+  /** Total width of the barcode viewBox */
+  viewBoxWidth: number;
+  /** Height of the barcode viewBox */
+  viewBoxHeight: number;
+}
+
+/**
  * SVG Renderer for barcode stripes
  */
 export class SVG {
@@ -53,6 +95,58 @@ export class SVG {
   }
 
   /**
+   * Returns structured barcode data for framework-native rendering
+   *
+   * This method provides all the information needed to render a barcode
+   * without any DOM dependency, making it ideal for React, Vue, Astro,
+   * and server-side rendering environments.
+   *
+   * @returns The barcode data with stripe positions, dimensions, and colors
+   */
+  toBarcodeData(): BarcodeData {
+    const stripes: BarcodeStripe[] = [];
+    let pos = 0;
+
+    for (let i = 0; i < this.stripes.length; i += 1) {
+      const width = this.stripeWidth * this.stripes[i];
+      stripes.push({
+        x: pos,
+        width,
+        height: DEFAULT_BARCODE_HEIGHT,
+        color: SVG.color(i),
+      });
+      pos += width;
+    }
+
+    return {
+      stripes,
+      viewBoxWidth: this.viewBoxWidth(),
+      viewBoxHeight: DEFAULT_BARCODE_HEIGHT,
+    };
+  }
+
+  /**
+   * Generates the barcode as an SVG string without any DOM dependency
+   *
+   * This method builds SVG markup directly as a string, making it suitable
+   * for server-side rendering (SSR) environments like Astro, Next.js, or Nuxt
+   * where `document` is not available.
+   *
+   * @returns The SVG markup as a string
+   */
+  toSVGString(): string {
+    const data = this.toBarcodeData();
+    const rects = data.stripes
+      .map(
+        (s) =>
+          `<rect width="${s.width}" height="${s.height}" fill="${s.color}" x="${s.x}" y="0"/>`,
+      )
+      .join('');
+
+    return `<svg xmlns="${SVG_NAMESPACE}" width="100%" height="100%" viewBox="0 0 ${data.viewBoxWidth} ${data.viewBoxHeight}">${rects}</svg>`;
+  }
+
+  /**
    * Appends an SVG object and renders the barcode inside it
    *
    * The structure of the SVG is a series of parallel rectangular stripes whose
@@ -60,11 +154,18 @@ export class SVG {
    * These stripes are placed from left to right. Their width will vary
    * depending on their weight, which can be either 1 or 2.
    *
+   * When no selector is provided, this method uses a pure string builder
+   * (no DOM dependency), making it safe for SSR environments.
+   *
    * @param selector - The selector to the object where the SVG must be appended.
    *                   If omitted, returns the SVG as a string.
    * @returns null if selector is provided (SVG is appended to DOM), otherwise returns SVG string
    */
   render(selector?: string): string | null {
+    if (selector === undefined) {
+      return this.toSVGString();
+    }
+
     const svg = document.createElementNS(SVG_NAMESPACE, 'svg');
     let pos = 0;
     let width = 0;
@@ -87,10 +188,6 @@ export class SVG {
       'viewBox',
       `0 0 ${this.viewBoxWidth()} ${DEFAULT_BARCODE_HEIGHT}`,
     );
-
-    if (selector === undefined) {
-      return new XMLSerializer().serializeToString(svg);
-    }
 
     const element = document.querySelector(selector);
     if (element) {

@@ -67,7 +67,150 @@ console.log(svg);
 </script>
 ```
 
+### React Component
+
+```tsx
+import { useMemo } from 'react';
+import { Boleto } from '@tiare.balbi/boleto.ts';
+import type { BarcodeData } from '@tiare.balbi/boleto.ts';
+
+export function BoletoViewer({ number }: { number: string }) {
+  const { data, info, error } = useMemo(() => {
+    try {
+      const boleto = new Boleto(number);
+      return {
+        data: boleto.barcodeData(),
+        info: {
+          bank: boleto.bank(),
+          prettyAmount: boleto.prettyAmount(),
+          prettyNumber: boleto.prettyNumber(),
+        },
+        error: null,
+      };
+    } catch (err) {
+      return { data: null, info: null, error: (err as Error).message };
+    }
+  }, [number]);
+
+  if (error) return <div className="error">{error}</div>;
+
+  return (
+    <div>
+      {data && <BarcodeImage data={data} />}
+      {info && (
+        <div>
+          <p>Bank: {info.bank}</p>
+          <p>Amount: {info.prettyAmount}</p>
+          <p>Number: {info.prettyNumber}</p>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function BarcodeImage({ data }: { data: BarcodeData }) {
+  return (
+    <svg
+      viewBox={`0 0 ${data.viewBoxWidth} ${data.viewBoxHeight}`}
+      width="100%"
+      height="100%"
+    >
+      {data.stripes.map((stripe, i) => (
+        <rect
+          key={i}
+          x={stripe.x}
+          y={0}
+          width={stripe.width}
+          height={stripe.height}
+          fill={stripe.color}
+        />
+      ))}
+    </svg>
+  );
+}
+
+// Usage: <BoletoViewer number="23793.38128 86000.000009 00000.000380 1 84660000012345" />
+```
+
+### Vue Component
+
+```vue
+<template>
+  <div>
+    <div v-if="error" class="error">{{ error }}</div>
+    <template v-else-if="data">
+      <svg
+        :viewBox="`0 0 ${data.viewBoxWidth} ${data.viewBoxHeight}`"
+        width="100%"
+        height="100%"
+      >
+        <rect
+          v-for="(stripe, i) in data.stripes"
+          :key="i"
+          :x="stripe.x"
+          y="0"
+          :width="stripe.width"
+          :height="stripe.height"
+          :fill="stripe.color"
+        />
+      </svg>
+      <div v-if="info">
+        <p><strong>Bank:</strong> {{ info.bank }}</p>
+        <p><strong>Amount:</strong> {{ info.prettyAmount }}</p>
+        <p><strong>Number:</strong> {{ info.prettyNumber }}</p>
+      </div>
+    </template>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { computed } from 'vue';
+import { Boleto } from '@tiare.balbi/boleto.ts';
+
+const props = defineProps<{ number: string }>();
+
+const boleto = computed(() => {
+  try {
+    return new Boleto(props.number);
+  } catch {
+    return null;
+  }
+});
+
+const data = computed(() => boleto.value?.barcodeData() ?? null);
+const info = computed(() =>
+  boleto.value
+    ? {
+        bank: boleto.value.bank(),
+        prettyAmount: boleto.value.prettyAmount(),
+        prettyNumber: boleto.value.prettyNumber(),
+      }
+    : null,
+);
+const error = computed(() => (boleto.value ? null : 'Invalid boleto number'));
+</script>
+```
+
+### SSR / Astro
+
+The `toSVG()` method (without a selector) and `barcodeData()` work without a DOM environment, making them safe for server-side rendering:
+
+```astro
+---
+import { Boleto } from '@tiare.balbi/boleto.ts';
+
+const boleto = new Boleto('23793.38128 86000.000009 00000.000380 1 84660000012345');
+const svgString = boleto.toSVG();
+---
+
+<div set:html={svgString} />
+<p>Bank: {boleto.bank()}</p>
+<p>Amount: {boleto.prettyAmount()}</p>
+```
+
 The boleto number can contain only digits or be formatted with dots and spaces. The library will filter and validate the digits before rendering the barcode.
+
+> For more detailed examples including error handling, Node.js integration, and additional framework patterns, see the [Usage Guide](USAGE.md).
 
 ## API Reference
 
