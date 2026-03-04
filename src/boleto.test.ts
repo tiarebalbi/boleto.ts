@@ -78,6 +78,20 @@ describe('Boleto', () => {
       const invalidBoleto = { bankSlipNumber: '1234567890' } as Boleto;
       expect(Boleto.prototype.valid.call(invalidBoleto)).toBe(false);
     });
+
+    it('should return false for correct-length number with wrong checksum', () => {
+      // Flip the barcode checksum digit (position 32 in VALID_BOLETO_CLEAN)
+      const wrongChecksum =
+        VALID_BOLETO_CLEAN.slice(0, 32) +
+        ((parseInt(VALID_BOLETO_CLEAN[32], 10) + 1) % 10).toString() +
+        VALID_BOLETO_CLEAN.slice(33);
+      // Use Object.create so the object inherits barcode() from the prototype
+      const invalidBoleto = Object.assign(
+        Object.create(Boleto.prototype) as Boleto,
+        { bankSlipNumber: wrongChecksum },
+      );
+      expect(invalidBoleto.valid()).toBe(false);
+    });
   });
 
   describe('barcode', () => {
@@ -117,6 +131,13 @@ describe('Boleto', () => {
         /^\d{5}\.\d{5} \d{5}\.\d{6} \d{5}\.\d{6} \d \d{14}$/,
       );
     });
+
+    it('should produce the expected formatted string', () => {
+      const boleto = new Boleto(VALID_BOLETO_CLEAN);
+      expect(boleto.prettyNumber()).toBe(
+        '23793.38128 86000.000009 00000.000380 1 84660000012345',
+      );
+    });
   });
 
   describe('bank', () => {
@@ -125,12 +146,12 @@ describe('Boleto', () => {
       expect(boleto.bank()).toBe('BCO BRADESCO S.A.'); // Bank code 237
     });
 
-    it('should return Unknown for unknown bank code', () => {
-      // Test that the function correctly returns bank name for valid boleto
-      // Note: Testing "Unknown" return would require a boleto with unknown bank code,
-      // but we can verify the known bank code works correctly
-      const boleto = new Boleto(VALID_BOLETO);
-      expect(boleto.bank()).toBe('BCO BRADESCO S.A.');
+    it('should return "Unknown" for unrecognised bank code', () => {
+      // Use a barcode starting with a code not present in BANK_CODES ('999')
+      const unknownBankBoleto = {
+        barcode: () => '999' + '9'.repeat(41),
+      } as unknown as Boleto;
+      expect(Boleto.prototype.bank.call(unknownBankBoleto)).toBe('Unknown');
     });
   });
 
@@ -153,6 +174,14 @@ describe('Boleto', () => {
 
       // Both calls should return the same cached object
       expect(currency1).toBe(currency2);
+    });
+
+    it('should return null for unknown currency code', () => {
+      // Craft a boleto-like object whose barcode 4th digit is not '9'
+      const invalidCurrencyBoleto = {
+        barcode: () => '2370' + '0'.repeat(40),
+      } as unknown as Boleto;
+      expect(Boleto.prototype.currency.call(invalidCurrencyBoleto)).toBeNull();
     });
   });
 
@@ -182,6 +211,16 @@ describe('Boleto', () => {
 
       expect(date.toString()).not.toBe('Invalid Date');
     });
+
+    it('should compute the correct expiration date', () => {
+      const boleto = new Boleto(VALID_BOLETO);
+      // barcode days field (positions 5-8): "8466" days after the boleto epoch
+      // Boleto epoch = 1997-10-07 12:00:00 GMT-0300 (876236400000 ms)
+      const expected = new Date(876236400000 + 8466 * 86400000);
+      expect(boleto.expirationDate().toDateString()).toBe(
+        expected.toDateString(),
+      );
+    });
   });
 
   describe('amount', () => {
@@ -199,6 +238,12 @@ describe('Boleto', () => {
       // Amount is from positions 9-18 of barcode, divided by 100
       expect(parseFloat(amount)).toBeGreaterThanOrEqual(0);
     });
+
+    it('should compute the correct amount', () => {
+      const boleto = new Boleto(VALID_BOLETO);
+      // barcode amount field (positions 9-18): "0000012345" → 123.45
+      expect(boleto.amount()).toBe('123.45');
+    });
   });
 
   describe('prettyAmount', () => {
@@ -208,6 +253,14 @@ describe('Boleto', () => {
 
       expect(prettyAmount).toContain('R$');
       expect(prettyAmount).toContain(',');
+    });
+
+    it('should return plain amount when currency is null', () => {
+      const mockBoleto = {
+        currency: () => null,
+        amount: () => '123.45',
+      } as unknown as Boleto;
+      expect(Boleto.prototype.prettyAmount.call(mockBoleto)).toBe('123.45');
     });
   });
 
