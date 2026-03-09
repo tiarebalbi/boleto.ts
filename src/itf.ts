@@ -106,5 +106,6 @@ class ITFEncoder {
  * encode('1234567890');
  */
 export function encode(number: string): string {
-  return ITFEncoder.encode(number);
+  const paddedNumber = number.length % 2 !== 0 ? '0' + number : number;
+  return ITFEncoder.encode(paddedNumber);
 }

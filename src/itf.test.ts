@@ -59,12 +59,19 @@ describe('encode', () => {
     expect(result.length).toBe(4 + 22 * 10 + 3);
   });
 
-  it('should handle single digit (odd length)', () => {
-    // When there's an odd number of digits, the regex will match '.' which is a single char
-    // pair "5": parseInt('5') = 5, Math.floor(5/10) = 0, 5 % 10 = 5
-    // black = WEIGHTS[0] = '11221', white = WEIGHTS[5] = '21211'
+  it('should pad odd-length input with leading zero (single digit)', () => {
+    // '5' has odd length, so it is padded to '05' before encoding (standard ITF leading-zero pad)
+    // pair "05": parseInt('05', 10) = 5, black = WEIGHTS[0] = '11221', white = WEIGHTS[5] = '21211'
     // Interleaved: '1211222111'
     const result = encode('5');
     expect(result).toBe('1111' + '1211222111' + '211');
+    // Must equal the explicitly pre-padded form
+    expect(result).toBe(encode('05'));
+  });
+
+  it('should pad multi-digit odd-length input with leading zero', () => {
+    // '12345' has odd length, so it is padded to '012345' before encoding
+    // pairs become ['01', '23', '45'] rather than ['12', '34', '5']
+    expect(encode('12345')).toBe(encode('012345'));
   });
 });

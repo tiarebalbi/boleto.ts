@@ -358,9 +358,11 @@ describe('Boleto', () => {
       expect(container?.querySelector('svg')).not.toBeNull();
     });
 
-    it('should return null when selector does not match any element', () => {
+    it('should throw when selector does not match any element', () => {
       const boleto = new Boleto(VALID_BOLETO);
-      expect(boleto.toSVG('#nonexistent')).toBeNull();
+      expect(() => boleto.toSVG('#nonexistent')).toThrow(
+        'SVG render target not found: "#nonexistent"',
+      );
     });
   });
 
