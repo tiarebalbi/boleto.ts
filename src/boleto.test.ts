@@ -10,6 +10,14 @@ import { Boleto, BoletoValidationError } from './boleto.ts';
 // This is a properly calculated valid boleto with correct checksums
 const VALID_BOLETO = '23793.38128 86000.000009 00000.000380 1 84660000012345';
 const VALID_BOLETO_CLEAN = '23793381288600000000900000000380184660000012345';
+// Pre-computed barcode: $1+$5+$2+$3+$4 rearrangement of VALID_BOLETO_CLEAN
+const VALID_BOLETO_BARCODE = '23791846600000123453381286000000000000000038';
+
+// Additional valid boleto fixtures for different banks
+// Banco do Brasil (001): R$ 500.00, 9000 days after epoch
+const BB_BOLETO = '00190000090000000000000000000000890000000050000';
+// Itaú Unibanco (341): R$ 99.90, 7500 days after epoch
+const ITAU_BOLETO = '34191234546789012345767890123457675000000009990';
 
 describe('BoletoValidationError', () => {
   it('should be an instance of Error', () => {
@@ -111,6 +119,11 @@ describe('Boleto', () => {
 
       // Bank code should be first 3 digits
       expect(barcode.substring(0, 3)).toBe('237');
+    });
+
+    it('should produce the known full barcode for VALID_BOLETO', () => {
+      const boleto = new Boleto(VALID_BOLETO);
+      expect(boleto.barcode()).toBe(VALID_BOLETO_BARCODE);
     });
   });
 
@@ -221,6 +234,15 @@ describe('Boleto', () => {
         expected.toDateString(),
       );
     });
+
+    it('should return the epoch date when days field is 0000', () => {
+      // Barcode with positions 5-8 = '0000' → 0 days after epoch
+      const mockBoleto = {
+        barcode: () => '23791000000000000000000000000000000000000000',
+      } as unknown as Boleto;
+      const date = Boleto.prototype.expirationDate.call(mockBoleto);
+      expect(date.getTime()).toBe(876236400000); // BOLETO_EPOCH
+    });
   });
 
   describe('amount', () => {
@@ -244,6 +266,14 @@ describe('Boleto', () => {
       // barcode amount field (positions 9-18): "0000012345" → 123.45
       expect(boleto.amount()).toBe('123.45');
     });
+
+    it('should return "0.00" for a zero-amount boleto', () => {
+      // Barcode with positions 9-18 = '0000000000' → amount 0
+      const mockBoleto = {
+        barcode: () => '23791000000000000000000000000000000000000000',
+      } as unknown as Boleto;
+      expect(Boleto.prototype.amount.call(mockBoleto)).toBe('0.00');
+    });
   });
 
   describe('prettyAmount', () => {
@@ -253,6 +283,11 @@ describe('Boleto', () => {
 
       expect(prettyAmount).toContain('R$');
       expect(prettyAmount).toContain(',');
+    });
+
+    it('should format BRL amount as "R$ 123,45"', () => {
+      const boleto = new Boleto(VALID_BOLETO);
+      expect(boleto.prettyAmount()).toBe('R$ 123,45');
     });
 
     it('should return plain amount when currency is null', () => {
