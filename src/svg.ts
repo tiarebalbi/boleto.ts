@@ -160,6 +160,7 @@ export class SVG {
    * @param selector - The selector to the object where the SVG must be appended.
    *                   If omitted, returns the SVG as a string.
    * @returns null if selector is provided (SVG is appended to DOM), otherwise returns SVG string
+   * @throws {Error} If a selector is provided but no matching element is found in the DOM
    */
   render(selector?: string): string | null {
     if (selector === undefined) {
