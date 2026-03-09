@@ -166,18 +166,15 @@ export class SVG {
       return this.toSVGString();
     }
 
+    const data = this.toBarcodeData();
     const svg = document.createElementNS(SVG_NAMESPACE, 'svg');
-    let pos = 0;
-    let width = 0;
 
-    for (let i = 0; i < this.stripes.length; i += 1, pos += width) {
-      width = this.stripeWidth * this.stripes[i];
-
+    for (const stripe of data.stripes) {
       const shape = document.createElementNS(SVG_NAMESPACE, 'rect');
-      shape.setAttribute('width', String(width));
-      shape.setAttribute('height', String(DEFAULT_BARCODE_HEIGHT));
-      shape.setAttribute('fill', SVG.color(i));
-      shape.setAttribute('x', String(pos));
+      shape.setAttribute('width', String(stripe.width));
+      shape.setAttribute('height', String(stripe.height));
+      shape.setAttribute('fill', stripe.color);
+      shape.setAttribute('x', String(stripe.x));
       shape.setAttribute('y', '0');
       svg.appendChild(shape);
     }
@@ -186,13 +183,14 @@ export class SVG {
     svg.setAttribute('height', '100%');
     svg.setAttribute(
       'viewBox',
-      `0 0 ${this.viewBoxWidth()} ${DEFAULT_BARCODE_HEIGHT}`,
+      `0 0 ${data.viewBoxWidth} ${data.viewBoxHeight}`,
     );
 
     const element = document.querySelector(selector);
-    if (element) {
-      element.appendChild(svg);
+    if (!element) {
+      throw new Error(`SVG render target not found: "${selector}"`);
     }
+    element.appendChild(svg);
     return null;
   }
 

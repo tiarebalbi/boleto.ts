@@ -241,11 +241,12 @@ describe('SVG', () => {
       expect(result).toContain('height="100%"');
     });
 
-    it('should handle non-existent selector gracefully', () => {
+    it('should throw when selector does not match any element', () => {
       const svg = new SVG('12', 4);
-      const result = svg.render('#nonexistent');
 
-      expect(result).toBeNull();
+      expect(() => svg.render('#nonexistent')).toThrow(
+        'SVG render target not found: "#nonexistent"',
+      );
     });
   });
 });
