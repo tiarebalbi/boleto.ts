@@ -365,4 +365,33 @@ describe('Boleto', () => {
       );
     });
   });
+
+  describe('additional bank fixtures', () => {
+    it('should correctly parse a Banco do Brasil (001) boleto', () => {
+      const boleto = new Boleto(BB_BOLETO);
+
+      expect(boleto.valid()).toBe(true);
+      expect(boleto.bank()).toBe('BCO DO BRASIL S.A.');
+      expect(boleto.amount()).toBe('500.00');
+      expect(boleto.prettyAmount()).toBe('R$ 500,00');
+    });
+
+    it('should correctly parse an Itaú Unibanco (341) boleto', () => {
+      const boleto = new Boleto(ITAU_BOLETO);
+
+      expect(boleto.valid()).toBe(true);
+      expect(boleto.bank()).toBe('ITAÚ UNIBANCO S.A.');
+      expect(boleto.amount()).toBe('99.90');
+      expect(boleto.prettyAmount()).toBe('R$ 99,90');
+    });
+
+    it('should have a different expiration date than Bradesco boleto', () => {
+      const bbBoleto = new Boleto(BB_BOLETO);
+      const bradescoBoleto = new Boleto(VALID_BOLETO);
+
+      expect(bbBoleto.expirationDate().getTime()).not.toBe(
+        bradescoBoleto.expirationDate().getTime(),
+      );
+    });
+  });
 });
