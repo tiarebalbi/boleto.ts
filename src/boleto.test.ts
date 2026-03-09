@@ -322,5 +322,12 @@ describe('Boleto', () => {
       const container = document.querySelector('#barcode');
       expect(container?.querySelector('svg')).not.toBeNull();
     });
+
+    it('should throw when selector does not match any element', () => {
+      const boleto = new Boleto(VALID_BOLETO);
+      expect(() => boleto.toSVG('#nonexistent')).toThrow(
+        'SVG render target not found: "#nonexistent"',
+      );
+    });
   });
 });
