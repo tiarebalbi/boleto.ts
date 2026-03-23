@@ -104,9 +104,12 @@ describe('Boleto', () => {
     it('should return false when barcode checksum digit is 0 (modulo11 never returns 0)', () => {
       // Barcode with '0' at position 4 is always invalid by spec
       // bankSlipNumber length: 4 + 1 + 42 = 47 characters (BANK_SLIP_NUMBER_LENGTH)
-      const mockBoleto = Object.assign(Object.create(Boleto.prototype) as Boleto, {
-        bankSlipNumber: '2379' + '0' + '0'.repeat(42), // length 47, checksum = '0'
-      });
+      const mockBoleto = Object.assign(
+        Object.create(Boleto.prototype) as Boleto,
+        {
+          bankSlipNumber: '2379' + '0' + '0'.repeat(42), // length 47, checksum = '0'
+        },
+      );
       expect(mockBoleto.valid()).toBe(false);
     });
   });
