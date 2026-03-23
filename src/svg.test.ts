@@ -202,6 +202,30 @@ describe('SVG', () => {
       expect(container?.querySelector('svg')).not.toBeNull();
     });
 
+    it('should set correct attributes on the SVG element appended to DOM', () => {
+      document.body.innerHTML = '<div id="barcode"></div>';
+      const svg = new SVG('12', 4);
+      svg.render('#barcode');
+
+      const container = document.querySelector('#barcode')!;
+      const svgEl = container.querySelector('svg')!;
+
+      expect(svgEl.getAttribute('viewBox')).toBe('0 0 12 100');
+      expect(svgEl.getAttribute('width')).toBe('100%');
+      expect(svgEl.getAttribute('height')).toBe('100%');
+
+      const rects = svgEl.querySelectorAll('rect');
+      expect(rects).toHaveLength(2);
+      expect(rects[0].getAttribute('width')).toBe('4');
+      expect(rects[0].getAttribute('x')).toBe('0');
+      expect(rects[0].getAttribute('fill')).toBe('#000000');
+      expect(rects[0].getAttribute('height')).toBe('100');
+      expect(rects[0].getAttribute('y')).toBe('0');
+      expect(rects[1].getAttribute('width')).toBe('8');
+      expect(rects[1].getAttribute('x')).toBe('4');
+      expect(rects[1].getAttribute('fill')).toBe('#ffffff');
+    });
+
     it('should create correct number of rect elements', () => {
       const svg = new SVG('1234', 4);
       const result = svg.render();

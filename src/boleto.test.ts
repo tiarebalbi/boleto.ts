@@ -100,6 +100,15 @@ describe('Boleto', () => {
       );
       expect(invalidBoleto.valid()).toBe(false);
     });
+
+    it('should return false when barcode checksum digit is 0 (modulo11 never returns 0)', () => {
+      // Barcode with '0' at position 4 is always invalid by spec
+      // bankSlipNumber length: 4 + 1 + 42 = 47 characters (BANK_SLIP_NUMBER_LENGTH)
+      const mockBoleto = Object.assign(Object.create(Boleto.prototype) as Boleto, {
+        bankSlipNumber: '2379' + '0' + '0'.repeat(42), // length 47, checksum = '0'
+      });
+      expect(mockBoleto.valid()).toBe(false);
+    });
   });
 
   describe('barcode', () => {
@@ -206,6 +215,13 @@ describe('Boleto', () => {
       expect(checksum).toMatch(/^\d$/);
       expect(checksum).toBe(boleto.barcode()[4]);
     });
+
+    it('should return the known checksum digit for VALID_BOLETO', () => {
+      const boleto = new Boleto(VALID_BOLETO);
+      // VALID_BOLETO_BARCODE = '23791846600000123453381286000000000000000038'
+      // position 4 (0-indexed) = '1'
+      expect(boleto.checksum()).toBe('1');
+    });
   });
 
   describe('expirationDate', () => {
@@ -242,6 +258,24 @@ describe('Boleto', () => {
       } as unknown as Boleto;
       const date = Boleto.prototype.expirationDate.call(mockBoleto);
       expect(date.getTime()).toBe(876236400000); // BOLETO_EPOCH
+    });
+
+    it('should return 1 day after epoch when days field is 0001', () => {
+      // Barcode positions 5-8 = '0001' → 1 day after epoch
+      const mockBoleto = {
+        barcode: () => '23791000100000000000000000000000000000000000',
+      } as unknown as Boleto;
+      const date = Boleto.prototype.expirationDate.call(mockBoleto);
+      expect(date.getTime()).toBe(876236400000 + 1 * 86400000);
+    });
+
+    it('should return correct date when days field is 9999 (maximum)', () => {
+      // Barcode positions 5-8 = '9999' → maximum days after epoch
+      const mockBoleto = {
+        barcode: () => '23791999900000000000000000000000000000000000',
+      } as unknown as Boleto;
+      const date = Boleto.prototype.expirationDate.call(mockBoleto);
+      expect(date.getTime()).toBe(876236400000 + 9999 * 86400000);
     });
   });
 
@@ -356,6 +390,25 @@ describe('Boleto', () => {
       expect(result).toBeNull();
       const container = document.querySelector('#barcode');
       expect(container?.querySelector('svg')).not.toBeNull();
+    });
+
+    it('should set correct attributes on the SVG element appended to DOM', () => {
+      document.body.innerHTML = '<div id="barcode"></div>';
+      const boleto = new Boleto(VALID_BOLETO);
+      boleto.toSVG('#barcode');
+
+      const container = document.querySelector('#barcode')!;
+      const svgEl = container.querySelector('svg')!;
+
+      expect(svgEl.getAttribute('width')).toBe('100%');
+      expect(svgEl.getAttribute('height')).toBe('100%');
+
+      const rects = svgEl.querySelectorAll('rect');
+      expect(rects.length).toBeGreaterThan(0);
+      expect(rects[0].getAttribute('fill')).toBe('#000000');
+      expect(rects[0].getAttribute('height')).toBe('100');
+      expect(rects[0].getAttribute('y')).toBe('0');
+      expect(rects[1].getAttribute('fill')).toBe('#ffffff');
     });
 
     it('should throw when selector does not match any element', () => {
