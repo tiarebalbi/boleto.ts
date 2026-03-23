@@ -571,6 +571,8 @@ export class Boleto {
    */
   readonly bankSlipNumber: string;
 
+  private _barcode: string | undefined;
+
   /**
    * Initializes the Boleto class
    *
@@ -618,10 +620,13 @@ export class Boleto {
    * @returns The barcode extracted from the bank slip number
    */
   barcode(): string {
-    return this.bankSlipNumber.replace(
-      /^(\d{4})(\d{5})\d{1}(\d{10})\d{1}(\d{10})\d{1}(\d{15})$/,
-      '$1$5$2$3$4',
-    );
+    if (this._barcode === undefined) {
+      this._barcode = this.bankSlipNumber.replace(
+        /^(\d{4})(\d{5})\d{1}(\d{10})\d{1}(\d{10})\d{1}(\d{15})$/,
+        '$1$5$2$3$4',
+      );
+    }
+    return this._barcode;
   }
 
   /**

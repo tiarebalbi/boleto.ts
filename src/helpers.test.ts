@@ -55,4 +55,19 @@ describe('modulo11', () => {
   it('should handle empty array', () => {
     expect(modulo11([])).toBe(1);
   });
+
+  it('should throw TypeError for non-digit string input', () => {
+    expect(() => modulo11('abc')).toThrow(TypeError);
+    expect(() => modulo11('abc')).toThrow(
+      'modulo11: expected digits only, got "abc"',
+    );
+  });
+
+  it('should throw TypeError for string with special characters', () => {
+    expect(() => modulo11('12.34')).toThrow(TypeError);
+  });
+
+  it('should throw TypeError for non-digit array input', () => {
+    expect(() => modulo11(['1', 'a', '3'])).toThrow(TypeError);
+  });
 });

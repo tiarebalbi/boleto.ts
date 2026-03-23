@@ -26,6 +26,11 @@ export function modulo11(number: string | string[]): number {
     digits = [...number];
   }
 
+  const input = digits.join('');
+  if (!/^\d*$/.test(input)) {
+    throw new TypeError(`modulo11: expected digits only, got "${input}"`);
+  }
+
   digits.reverse();
 
   let sum = 0;
