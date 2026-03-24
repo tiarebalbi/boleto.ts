@@ -178,6 +178,31 @@ describe('Boleto', () => {
       } as unknown as Boleto;
       expect(Boleto.prototype.bank.call(unknownBankBoleto)).toBe('Unknown');
     });
+
+    it('should return correct name for Santander (033)', () => {
+      const santanderBoleto = {
+        barcode: () => '033' + '9'.repeat(41),
+      } as unknown as Boleto;
+      expect(Boleto.prototype.bank.call(santanderBoleto)).toBe(
+        'BCO SANTANDER (BRASIL) S.A.',
+      );
+    });
+
+    it('should return correct name for Caixa Econômica Federal (104)', () => {
+      const caixaBoleto = {
+        barcode: () => '104' + '9'.repeat(41),
+      } as unknown as Boleto;
+      expect(Boleto.prototype.bank.call(caixaBoleto)).toBe(
+        'CAIXA ECONOMICA FEDERAL',
+      );
+    });
+
+    it('should return correct name for Sicoob (756)', () => {
+      const sicoobBoleto = {
+        barcode: () => '756' + '9'.repeat(41),
+      } as unknown as Boleto;
+      expect(Boleto.prototype.bank.call(sicoobBoleto)).toBe('BANCO SICOOB S.A.');
+    });
   });
 
   describe('currency', () => {
@@ -280,6 +305,17 @@ describe('Boleto', () => {
       const date = Boleto.prototype.expirationDate.call(mockBoleto);
       expect(date.getTime()).toBe(876236400000 + 9999 * 86400000);
     });
+
+    it('should handle a days offset that spans a leap year (Feb 29)', () => {
+      // 874 days after 1997-10-07 = 2000-02-29 (leap day)
+      const mockBoleto = {
+        barcode: () => '237910874000000000000000000000000000000000000',
+      } as unknown as Boleto;
+      const date = Boleto.prototype.expirationDate.call(mockBoleto);
+      const expected = new Date(876236400000 + 874 * 86400000);
+      expect(date.toDateString()).toBe(expected.toDateString());
+      expect(isNaN(date.getTime())).toBe(false);
+    });
   });
 
   describe('amount', () => {
@@ -310,6 +346,22 @@ describe('Boleto', () => {
         barcode: () => '23791000000000000000000000000000000000000000',
       } as unknown as Boleto;
       expect(Boleto.prototype.amount.call(mockBoleto)).toBe('0.00');
+    });
+
+    it('should return the maximum amount correctly (99999999.99)', () => {
+      // Barcode positions 9-18 = '9999999999' → 99999999.99
+      const mockBoleto = {
+        barcode: () => '237910000999999999900000000000000000000000000',
+      } as unknown as Boleto;
+      expect(Boleto.prototype.amount.call(mockBoleto)).toBe('99999999.99');
+    });
+
+    it('should return "0.01" for a one-cent amount', () => {
+      // Barcode positions 9-18 = '0000000001' → 0.01
+      const mockBoleto = {
+        barcode: () => '23791000000000000010000000000000000000000000',
+      } as unknown as Boleto;
+      expect(Boleto.prototype.amount.call(mockBoleto)).toBe('0.01');
     });
   });
 

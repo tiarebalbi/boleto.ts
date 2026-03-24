@@ -272,5 +272,19 @@ describe('SVG', () => {
         'SVG render target not found: "#nonexistent"',
       );
     });
+
+    it('should append SVG to the first matching element when multiple elements match', () => {
+      document.body.innerHTML =
+        '<div class="target"></div><div class="target"></div>';
+      const svg = new SVG('12', 4);
+      svg.render('.target');
+
+      // Only one SVG should exist in the document
+      expect(document.querySelectorAll('svg').length).toBe(1);
+      // The SVG should be in the first matching element
+      const targets = document.querySelectorAll('.target');
+      expect(targets[0].querySelector('svg')).not.toBeNull();
+      expect(targets[1].querySelector('svg')).toBeNull();
+    });
   });
 });

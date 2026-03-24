@@ -24,6 +24,13 @@ describe('encode', () => {
     expect(encode('99')).toBe('1111' + '1122112211' + '211');
   });
 
+  it('should encode "95" correctly', () => {
+    // For pair "95": black = WEIGHTS[9] = '12121', white = WEIGHTS[5] = '21211'
+    // Interleaved: black[i] + white[i] for each i:
+    //   '1'+'2', '2'+'1', '1'+'2', '2'+'1', '1'+'1' = '1221122111'
+    expect(encode('95')).toBe('1111' + '1221122111' + '211');
+  });
+
   it('should encode multiple pairs', () => {
     const result = encode('0123');
     // START = '1111'
