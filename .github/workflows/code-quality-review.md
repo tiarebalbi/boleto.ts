@@ -1,5 +1,5 @@
 ---
-description: "Weekly code quality review that analyzes the codebase and reports issues with improvement proposals"
+description: 'Weekly code quality review that analyzes the codebase and reports issues with improvement proposals'
 on:
   schedule: weekly
   workflow_dispatch:
@@ -11,7 +11,7 @@ tools:
     toolsets: [repos, issues]
 safe-outputs:
   create-issue:
-    title-prefix: "[code-quality] "
+    title-prefix: '[code-quality] '
     labels: [code-quality, automated-review]
     max: 3
     expires: 30d

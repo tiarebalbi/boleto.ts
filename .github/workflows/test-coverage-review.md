@@ -1,5 +1,5 @@
 ---
-description: "Weekly test coverage analysis that identifies areas missing tests and reports issues with suggestions"
+description: 'Weekly test coverage analysis that identifies areas missing tests and reports issues with suggestions'
 on:
   schedule: weekly
   workflow_dispatch:
@@ -11,7 +11,7 @@ tools:
     toolsets: [repos, issues]
 safe-outputs:
   create-issue:
-    title-prefix: "[test-coverage] "
+    title-prefix: '[test-coverage] '
     labels: [test-coverage, automated-review]
     max: 3
     expires: 30d

@@ -74,4 +74,19 @@ describe('encode', () => {
     // pairs become ['01', '23', '45'] rather than ['12', '34', '5']
     expect(encode('12345')).toBe(encode('012345'));
   });
+
+  it('should throw TypeError for non-digit input', () => {
+    expect(() => encode('ab')).toThrow(TypeError);
+    expect(() => encode('ab')).toThrow(
+      'encode: expected a string of digits, got "ab"',
+    );
+  });
+
+  it('should throw TypeError for input with spaces', () => {
+    expect(() => encode('12 34')).toThrow(TypeError);
+  });
+
+  it('should throw TypeError for input with special characters', () => {
+    expect(() => encode('12.34')).toThrow(TypeError);
+  });
 });
