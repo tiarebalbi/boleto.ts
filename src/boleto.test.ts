@@ -201,7 +201,9 @@ describe('Boleto', () => {
       const sicoobBoleto = {
         barcode: () => '756' + '9'.repeat(41),
       } as unknown as Boleto;
-      expect(Boleto.prototype.bank.call(sicoobBoleto)).toBe('BANCO SICOOB S.A.');
+      expect(Boleto.prototype.bank.call(sicoobBoleto)).toBe(
+        'BANCO SICOOB S.A.',
+      );
     });
   });
 
