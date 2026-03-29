@@ -112,6 +112,14 @@ describe('Boleto', () => {
       );
       expect(mockBoleto.valid()).toBe(false);
     });
+
+    it('should be valid when non-digit characters are stripped to exactly 47 digits', () => {
+      // Input: 47 digits + formatting characters (dots, spaces)
+      // After stripping: exactly 47 digits → should be valid if checksum is correct
+      const boleto = new Boleto(VALID_BOLETO); // VALID_BOLETO has formatting
+      expect(boleto.bankSlipNumber.length).toBe(47); // Should be stripped to 47
+      expect(boleto.valid()).toBe(true);
+    });
   });
 
   describe('barcode', () => {
@@ -177,6 +185,22 @@ describe('Boleto', () => {
         barcode: () => '999' + '9'.repeat(41),
       } as unknown as Boleto;
       expect(Boleto.prototype.bank.call(unknownBankBoleto)).toBe('Unknown');
+    });
+
+    it('should return correct name for Banco do Brasil (001)', () => {
+      const bbBoleto = {
+        barcode: () => '001' + '9'.repeat(41),
+      } as unknown as Boleto;
+      expect(Boleto.prototype.bank.call(bbBoleto)).toBe('BCO DO BRASIL S.A.');
+    });
+
+    it('should return correct name for Itaú (341)', () => {
+      const itauBoleto = {
+        barcode: () => '341' + '9'.repeat(41),
+      } as unknown as Boleto;
+      expect(Boleto.prototype.bank.call(itauBoleto)).toBe(
+        'ITAÚ UNIBANCO S.A.',
+      );
     });
 
     it('should return correct name for Santander (033)', () => {
@@ -387,6 +411,17 @@ describe('Boleto', () => {
         amount: () => '123.45',
       } as unknown as Boleto;
       expect(Boleto.prototype.prettyAmount.call(mockBoleto)).toBe('123.45');
+    });
+
+    it('should handle null currency gracefully without throwing', () => {
+      const mockBoleto = {
+        currency: () => null,
+        amount: () => '999.99',
+      } as unknown as Boleto;
+      const result = Boleto.prototype.prettyAmount.call(mockBoleto);
+      // Should not throw and should return a string
+      expect(typeof result).toBe('string');
+      expect(result).toBe('999.99');
     });
   });
 
