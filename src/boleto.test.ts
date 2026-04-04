@@ -198,9 +198,7 @@ describe('Boleto', () => {
       const itauBoleto = {
         barcode: () => '341' + '9'.repeat(41),
       } as unknown as Boleto;
-      expect(Boleto.prototype.bank.call(itauBoleto)).toBe(
-        'ITAÚ UNIBANCO S.A.',
-      );
+      expect(Boleto.prototype.bank.call(itauBoleto)).toBe('ITAÚ UNIBANCO S.A.');
     });
 
     it('should return correct name for Santander (033)', () => {
