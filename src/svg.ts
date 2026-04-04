@@ -90,7 +90,12 @@ export class SVG {
    * @param stripeWidth - The width of a single-weighted stripe (default: 4)
    */
   constructor(stripes: string, stripeWidth: number = DEFAULT_STRIPE_WIDTH) {
-    this.stripes = stripes.split('').map((a) => parseInt(a, 10));
+    if (!/^\d+$/.test(stripes)) {
+      throw new TypeError(
+        `SVG: expected a non-empty string of digits, got "${stripes}"`,
+      );
+    }
+    this.stripes = stripes.split('').map((digit) => parseInt(digit, 10));
     this.stripeWidth = stripeWidth;
   }
 

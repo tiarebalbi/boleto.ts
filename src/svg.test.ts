@@ -38,11 +38,6 @@ describe('SVG', () => {
       expect(svg.viewBoxWidth()).toBe(40);
     });
 
-    it('should handle empty stripes', () => {
-      const svg = new SVG('', 4);
-      expect(svg.viewBoxWidth()).toBe(0);
-    });
-
     it('should handle single stripe', () => {
       const svg = new SVG('5', 4);
       expect(svg.viewBoxWidth()).toBe(20);
@@ -95,15 +90,6 @@ describe('SVG', () => {
       expect(second.width).toBe(8); // 4 * 2
       expect(second.height).toBe(100);
       expect(second.color).toBe('#ffffff'); // odd index = white
-    });
-
-    it('should handle empty stripes', () => {
-      const svg = new SVG('', 4);
-      const data = svg.toBarcodeData();
-
-      expect(data.stripes).toHaveLength(0);
-      expect(data.viewBoxWidth).toBe(0);
-      expect(data.viewBoxHeight).toBe(100);
     });
 
     it('should handle multiple stripes with correct cumulative positions', () => {
@@ -171,14 +157,6 @@ describe('SVG', () => {
       expect(rects[1].getAttribute('width')).toBe('8');
       expect(rects[1].getAttribute('x')).toBe('4');
       expect(rects[1].getAttribute('fill')).toBe('#ffffff');
-    });
-
-    it('should handle empty stripes', () => {
-      const svg = new SVG('', 4);
-      const result = svg.toSVGString();
-
-      expect(result).toContain('<svg');
-      expect(result).not.toContain('<rect');
     });
 
     it('should produce consistent output with render() when no selector', () => {

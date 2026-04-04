@@ -27,8 +27,10 @@ export function modulo11(number: string | string[]): number {
   }
 
   const input = digits.join('');
-  if (!/^\d*$/.test(input)) {
-    throw new TypeError(`modulo11: expected digits only, got "${input}"`);
+  if (!/^\d+$/.test(input)) {
+    throw new TypeError(
+      `modulo11: expected a non-empty string of digits, got "${input}"`,
+    );
   }
 
   digits.reverse();

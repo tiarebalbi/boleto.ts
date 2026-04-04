@@ -41,8 +41,11 @@ describe('encode', () => {
     expect(result).toBe('1111' + '1211212112' + '1222111121' + '211');
   });
 
-  it('should handle empty string', () => {
-    expect(encode('')).toBe('1111211');
+  it('should throw TypeError for empty string', () => {
+    expect(() => encode('')).toThrow(TypeError);
+    expect(() => encode('')).toThrow(
+      'encode: expected a non-empty string of digits, got ""',
+    );
   });
 
   it('should encode a typical barcode number', () => {
@@ -85,7 +88,7 @@ describe('encode', () => {
   it('should throw TypeError for non-digit input', () => {
     expect(() => encode('ab')).toThrow(TypeError);
     expect(() => encode('ab')).toThrow(
-      'encode: expected a string of digits, got "ab"',
+      'encode: expected a non-empty string of digits, got "ab"',
     );
   });
 
