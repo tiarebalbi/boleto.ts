@@ -64,7 +64,9 @@ describe('Boleto', () => {
     });
 
     it('should throw with message "Invalid bank slip number"', () => {
-      expect(() => new Boleto('1234567890')).toThrow('Invalid bank slip number');
+      expect(() => new Boleto('1234567890')).toThrow(
+        'Invalid bank slip number',
+      );
     });
 
     it('should include bank slip number in error', () => {
