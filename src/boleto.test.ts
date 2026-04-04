@@ -63,6 +63,12 @@ describe('Boleto', () => {
       expect(() => new Boleto('1234567890')).toThrow(BoletoValidationError);
     });
 
+    it('should throw with message "Invalid bank slip number"', () => {
+      expect(() => new Boleto('1234567890')).toThrow(
+        'Invalid bank slip number',
+      );
+    });
+
     it('should include bank slip number in error', () => {
       try {
         new Boleto('1234567890');
@@ -71,6 +77,15 @@ describe('Boleto', () => {
         expect((error as BoletoValidationError).bankSlipNumber).toBe(
           '1234567890',
         );
+      }
+    });
+
+    it('should store the stripped (digit-only) input in BoletoValidationError', () => {
+      try {
+        new Boleto('12345.67890'); // Non-digit chars will be stripped → '1234567890' (invalid)
+      } catch (e) {
+        expect((e as BoletoValidationError).bankSlipNumber).toBe('1234567890');
+        // NOT '12345.67890'
       }
     });
   });
@@ -143,6 +158,12 @@ describe('Boleto', () => {
 
     it('should produce the known full barcode for VALID_BOLETO', () => {
       const boleto = new Boleto(VALID_BOLETO);
+      expect(boleto.barcode()).toBe(VALID_BOLETO_BARCODE);
+    });
+
+    it('should return the same barcode on repeated calls (memoized)', () => {
+      const boleto = new Boleto(VALID_BOLETO);
+      expect(boleto.barcode()).toBe(boleto.barcode());
       expect(boleto.barcode()).toBe(VALID_BOLETO_BARCODE);
     });
   });
@@ -420,6 +441,24 @@ describe('Boleto', () => {
       // Should not throw and should return a string
       expect(typeof result).toBe('string');
       expect(result).toBe('999.99');
+    });
+
+    it('should format large amounts correctly', () => {
+      const mockBoleto = {
+        currency: () => ({ code: 'BRL', symbol: 'R$', decimal: ',' }),
+        amount: () => '1000.00',
+      } as unknown as Boleto;
+      expect(Boleto.prototype.prettyAmount.call(mockBoleto)).toBe('R$ 1000,00');
+    });
+
+    it('should format maximum amount correctly (99999999.99)', () => {
+      const mockBoleto = {
+        currency: () => ({ code: 'BRL', symbol: 'R$', decimal: ',' }),
+        amount: () => '99999999.99',
+      } as unknown as Boleto;
+      expect(Boleto.prototype.prettyAmount.call(mockBoleto)).toBe(
+        'R$ 99999999,99',
+      );
     });
   });
 

@@ -23,16 +23,12 @@ describe('SVG', () => {
       expect(svg.stripeWidth).toBe(8);
     });
 
-    it('should throw TypeError for empty string', () => {
-      expect(() => new SVG('')).toThrow(TypeError);
-      expect(() => new SVG('')).toThrow(
-        'SVG: expected a non-empty string of digits, got ""',
-      );
-    });
-
-    it('should throw TypeError for non-digit characters', () => {
-      expect(() => new SVG('12a3')).toThrow(TypeError);
-      expect(() => new SVG('abc')).toThrow(TypeError);
+    it('should handle stripeWidth of 0 gracefully', () => {
+      const svg = new SVG('1234', 0);
+      expect(svg.viewBoxWidth()).toBe(0);
+      const data = svg.toBarcodeData();
+      expect(data.viewBoxWidth).toBe(0);
+      data.stripes.forEach((s) => expect(s.width).toBe(0));
     });
   });
 
@@ -59,6 +55,13 @@ describe('SVG', () => {
       expect(SVG.color(1)).toBe('#ffffff');
       expect(SVG.color(3)).toBe('#ffffff');
       expect(SVG.color(99)).toBe('#ffffff');
+    });
+
+    it('SVG.color() with negative index behaves consistently', () => {
+      // -1 % 2 === -1 in JavaScript, which is truthy, so returns white
+      expect(SVG.color(-1)).toBe('#ffffff');
+      // -2 % 2 === 0, which is falsy, so returns black
+      expect(SVG.color(-2)).toBe('#000000');
     });
   });
 

@@ -99,4 +99,18 @@ describe('encode', () => {
   it('should throw TypeError for input with special characters', () => {
     expect(() => encode('12.34')).toThrow(TypeError);
   });
+
+  it('should encode a 44-digit all-zeros barcode', () => {
+    const result = encode('0'.repeat(44));
+    expect(result.startsWith('1111')).toBe(true);
+    expect(result.endsWith('211')).toBe(true);
+    expect(result).toMatch(/^[12]+$/);
+  });
+
+  it('should encode a 44-digit all-nines barcode', () => {
+    const result = encode('9'.repeat(44));
+    expect(result.startsWith('1111')).toBe(true);
+    expect(result.endsWith('211')).toBe(true);
+    expect(result).toMatch(/^[12]+$/);
+  });
 });
