@@ -22,6 +22,14 @@ describe('SVG', () => {
       const svg = new SVG('12', 8);
       expect(svg.stripeWidth).toBe(8);
     });
+
+    it('should handle stripeWidth of 0 gracefully', () => {
+      const svg = new SVG('1234', 0);
+      expect(svg.viewBoxWidth()).toBe(0);
+      const data = svg.toBarcodeData();
+      expect(data.viewBoxWidth).toBe(0);
+      data.stripes.forEach((s) => expect(s.width).toBe(0));
+    });
   });
 
   describe('viewBoxWidth', () => {
@@ -52,6 +60,13 @@ describe('SVG', () => {
       expect(SVG.color(1)).toBe('#ffffff');
       expect(SVG.color(3)).toBe('#ffffff');
       expect(SVG.color(99)).toBe('#ffffff');
+    });
+
+    it('SVG.color() with negative index behaves consistently', () => {
+      // -1 % 2 === -1 in JavaScript, which is truthy, so returns white
+      expect(SVG.color(-1)).toBe('#ffffff');
+      // -2 % 2 === 0, which is falsy, so returns black
+      expect(SVG.color(-2)).toBe('#000000');
     });
   });
 

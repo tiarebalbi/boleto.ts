@@ -68,3 +68,43 @@ describe('main exports', () => {
     expect(data.viewBoxWidth).toBe(4);
   });
 });
+
+describe('public API integration', () => {
+  const VALID = '23793.38128 86000.000009 00000.000380 1 84660000012345';
+
+  it('full Boleto lifecycle through public API', () => {
+    const boleto = new Boleto(VALID);
+    expect(boleto.valid()).toBe(true);
+    expect(boleto.bank()).toBe('BCO BRADESCO S.A.');
+    expect(boleto.amount()).toBe('123.45');
+    expect(boleto.prettyAmount()).toBe('R$ 123,45');
+    expect(boleto.prettyNumber()).toBe(VALID);
+    expect(boleto.checksum()).toBe('1');
+    expect(boleto.expirationDate()).toBeInstanceOf(Date);
+  });
+
+  it('encode and modulo11 round-trip via public API', () => {
+    const boleto = new Boleto(VALID);
+    const barcode = boleto.barcode();
+    const encoded = encode(barcode);
+    expect(encoded).toMatch(/^[12]+$/);
+
+    const barcodeDigits = barcode.split('');
+    barcodeDigits.splice(4, 1); // remove checksum
+    expect(modulo11(barcodeDigits).toString()).toBe(boleto.checksum());
+  });
+
+  it('barcodeData returns renderable data through public API', () => {
+    const boleto = new Boleto(VALID);
+    const data = boleto.barcodeData();
+    expect(data.stripes.length).toBeGreaterThan(0);
+    expect(data.viewBoxWidth).toBeGreaterThan(0);
+    expect(data.viewBoxHeight).toBe(100);
+  });
+
+  it('SVG.render and toSVGString produce identical output via public API', () => {
+    const stripes = encode(new Boleto(VALID).barcode());
+    const svg = new SVG(stripes);
+    expect(svg.render()).toBe(svg.toSVGString());
+  });
+});
