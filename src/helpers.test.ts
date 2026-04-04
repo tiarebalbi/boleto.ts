@@ -48,18 +48,24 @@ describe('modulo11', () => {
     expect(modulo11('12345678901234')).toBe(1);
   });
 
-  it('should handle empty string', () => {
-    expect(modulo11('')).toBe(1);
+  it('should throw TypeError for empty string', () => {
+    expect(() => modulo11('')).toThrow(TypeError);
+    expect(() => modulo11('')).toThrow(
+      'modulo11: expected a non-empty string of digits, got ""',
+    );
   });
 
-  it('should handle empty array', () => {
-    expect(modulo11([])).toBe(1);
+  it('should throw TypeError for empty array', () => {
+    expect(() => modulo11([])).toThrow(TypeError);
+    expect(() => modulo11([])).toThrow(
+      'modulo11: expected a non-empty string of digits, got ""',
+    );
   });
 
   it('should throw TypeError for non-digit string input', () => {
     expect(() => modulo11('abc')).toThrow(TypeError);
     expect(() => modulo11('abc')).toThrow(
-      'modulo11: expected digits only, got "abc"',
+      'modulo11: expected a non-empty string of digits, got "abc"',
     );
   });
 

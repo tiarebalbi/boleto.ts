@@ -65,11 +65,11 @@ const BARCODE_CURRENCY_POSITION = 3;
 /**
  * Brazilian Real currency configuration
  */
-const BRL_CURRENCY: Currency = {
+const BRL_CURRENCY = {
   code: 'BRL',
   symbol: 'R$',
   decimal: ',',
-};
+} as const satisfies Currency;
 
 /**
  * Bank codes and their corresponding names
@@ -604,9 +604,13 @@ export class Boleto {
     if (this.bankSlipNumber.length !== BANK_SLIP_NUMBER_LENGTH) return false;
 
     const barcodeDigits = this.barcode().split('');
-    const [checksum] = barcodeDigits.splice(BARCODE_CHECKSUM_POSITION, 1);
+    const checksum = barcodeDigits[BARCODE_CHECKSUM_POSITION];
+    const digitsWithoutChecksum = [
+      ...barcodeDigits.slice(0, BARCODE_CHECKSUM_POSITION),
+      ...barcodeDigits.slice(BARCODE_CHECKSUM_POSITION + 1),
+    ];
 
-    return modulo11(barcodeDigits).toString() === checksum;
+    return modulo11(digitsWithoutChecksum).toString() === checksum;
   }
 
   /**
@@ -675,7 +679,7 @@ export class Boleto {
    *
    * @returns The currency object or null if currency is unknown
    */
-  currency(): Currency | null {
+  currency(): Readonly<Currency> | null {
     const currencyCode = this.barcode()[BARCODE_CURRENCY_POSITION];
     if (currencyCode === '9') {
       return BRL_CURRENCY;
