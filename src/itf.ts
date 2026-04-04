@@ -89,8 +89,10 @@ function encodeITF(number: string): string {
  * encode('1234567890');
  */
 export function encode(number: string): string {
-  if (!/^\d*$/.test(number)) {
-    throw new TypeError(`encode: expected a string of digits, got "${number}"`);
+  if (!/^\d+$/.test(number)) {
+    throw new TypeError(
+      `encode: expected a non-empty string of digits, got "${number}"`,
+    );
   }
   const paddedNumber = number.length % 2 !== 0 ? '0' + number : number;
   return encodeITF(paddedNumber);

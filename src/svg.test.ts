@@ -22,17 +22,24 @@ describe('SVG', () => {
       const svg = new SVG('12', 8);
       expect(svg.stripeWidth).toBe(8);
     });
+
+    it('should throw TypeError for empty string', () => {
+      expect(() => new SVG('')).toThrow(TypeError);
+      expect(() => new SVG('')).toThrow(
+        'SVG: expected a non-empty string of digits, got ""',
+      );
+    });
+
+    it('should throw TypeError for non-digit characters', () => {
+      expect(() => new SVG('12a3')).toThrow(TypeError);
+      expect(() => new SVG('abc')).toThrow(TypeError);
+    });
   });
 
   describe('viewBoxWidth', () => {
     it('should calculate width as sum of stripes times stripe width', () => {
       const svg = new SVG('1234', 4); // sum = 1+2+3+4 = 10, * 4 = 40
       expect(svg.viewBoxWidth()).toBe(40);
-    });
-
-    it('should handle empty stripes', () => {
-      const svg = new SVG('', 4);
-      expect(svg.viewBoxWidth()).toBe(0);
     });
 
     it('should handle single stripe', () => {
@@ -80,15 +87,6 @@ describe('SVG', () => {
       expect(second.width).toBe(8); // 4 * 2
       expect(second.height).toBe(100);
       expect(second.color).toBe('#ffffff'); // odd index = white
-    });
-
-    it('should handle empty stripes', () => {
-      const svg = new SVG('', 4);
-      const data = svg.toBarcodeData();
-
-      expect(data.stripes).toHaveLength(0);
-      expect(data.viewBoxWidth).toBe(0);
-      expect(data.viewBoxHeight).toBe(100);
     });
 
     it('should handle multiple stripes with correct cumulative positions', () => {
@@ -156,14 +154,6 @@ describe('SVG', () => {
       expect(rects[1].getAttribute('width')).toBe('8');
       expect(rects[1].getAttribute('x')).toBe('4');
       expect(rects[1].getAttribute('fill')).toBe('#ffffff');
-    });
-
-    it('should handle empty stripes', () => {
-      const svg = new SVG('', 4);
-      const result = svg.toSVGString();
-
-      expect(result).toContain('<svg');
-      expect(result).not.toContain('<rect');
     });
 
     it('should produce consistent output with render() when no selector', () => {
