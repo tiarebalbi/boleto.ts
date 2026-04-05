@@ -289,5 +289,3 @@ The barcode is rendered as SVG, providing excellent sharpness at various sizes. 
 ## License
 
 MIT © [Tiare Balbi](https://github.com/tiarebalbi)
-
-This project is a fork of [boleto.js](https://github.com/guilhermearaujo/boleto.js) by [Guilherme Araújo](https://github.com/guilhermearaujo).
