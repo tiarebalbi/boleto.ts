@@ -581,7 +581,9 @@ describe('Boleto', () => {
       const barcode = boleto.barcode();
       const days = parseInt(barcode.substring(5, 9), 10);
       const expected = new Date(876236400000 + days * 86400000);
-      expect(boleto.expirationDate().toDateString()).toBe(expected.toDateString());
+      expect(boleto.expirationDate().toDateString()).toBe(
+        expected.toDateString(),
+      );
     });
 
     it('should compute the correct expiration date for ITAU_BOLETO', () => {
@@ -589,7 +591,9 @@ describe('Boleto', () => {
       const barcode = boleto.barcode();
       const days = parseInt(barcode.substring(5, 9), 10);
       const expected = new Date(876236400000 + days * 86400000);
-      expect(boleto.expirationDate().toDateString()).toBe(expected.toDateString());
+      expect(boleto.expirationDate().toDateString()).toBe(
+        expected.toDateString(),
+      );
     });
   });
 });
