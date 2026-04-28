@@ -32,6 +32,30 @@ describe('SVG', () => {
     });
   });
 
+  describe('constructor – invalid input', () => {
+    it('should throw TypeError for empty string', () => {
+      expect(() => new SVG('')).toThrow(TypeError);
+      expect(() => new SVG('')).toThrow(
+        'SVG: expected a non-empty string of digits, got ""',
+      );
+    });
+
+    it('should throw TypeError for non-digit string', () => {
+      expect(() => new SVG('abc')).toThrow(TypeError);
+      expect(() => new SVG('abc')).toThrow(
+        'SVG: expected a non-empty string of digits, got "abc"',
+      );
+    });
+
+    it('should throw TypeError for string with spaces', () => {
+      expect(() => new SVG('12 34')).toThrow(TypeError);
+    });
+
+    it('should throw TypeError for string with dots', () => {
+      expect(() => new SVG('12.34')).toThrow(TypeError);
+    });
+  });
+
   describe('viewBoxWidth', () => {
     it('should calculate width as sum of stripes times stripe width', () => {
       const svg = new SVG('1234', 4); // sum = 1+2+3+4 = 10, * 4 = 40

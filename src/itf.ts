@@ -68,10 +68,7 @@ function interleavePair(pair: string): string {
  * @returns The input number encoded into its ITF representation
  */
 function encodeITF(number: string): string {
-  const pairs = number.match(/(..?)/g);
-  if (!pairs) {
-    return ITFMarkers.START + ITFMarkers.STOP;
-  }
+  const pairs = number.match(/(..?)/g) ?? [];
   return (
     ITFMarkers.START + pairs.map(interleavePair).join('') + ITFMarkers.STOP
   );
