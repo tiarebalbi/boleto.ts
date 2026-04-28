@@ -41,5 +41,7 @@ export function modulo11(number: string | string[]): number {
     sum += ((i % 8) + 2) * parseInt(digits[i], 10);
   }
 
-  return (11 - (sum % 11)) % 10 || 1;
+  const remainder = (11 - (sum % 11)) % 10;
+  // Per Febraban spec: a remainder of 0 maps to check digit 1
+  return remainder === 0 ? 1 : remainder;
 }
