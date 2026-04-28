@@ -21,11 +21,9 @@ describe('modulo11', () => {
     expect(modulo11('0')).toBe(1);
   });
 
-  it('should return 1 via the || 1 fallback when intermediate result is 0', () => {
+  it('should return 1 when intermediate remainder is 0', () => {
     // Single digit '6': weight 2 → sum = 12, 12 % 11 = 1, (11-1) % 10 = 0
-    // The expression (11 - (sum % 11)) % 10 evaluates to 0, so the `|| 1`
-    // fallback fires — unlike modulo11('0') where sum % 11 = 0 gives 11 % 10 = 1
-    // directly without hitting the fallback.
+    // Per Febraban spec: a remainder of 0 maps to check digit 1
     expect(modulo11('6')).toBe(1);
   });
 
