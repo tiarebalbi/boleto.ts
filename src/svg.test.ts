@@ -103,13 +103,13 @@ describe('SVG', () => {
       const svg = new SVG('12', 4);
       const data = svg.toBarcodeData();
 
-      const first: BarcodeStripe = data.stripes[0];
+      const first: BarcodeStripe = data.stripes[0]!;
       expect(first.x).toBe(0);
       expect(first.width).toBe(4); // 4 * 1
       expect(first.height).toBe(100);
       expect(first.color).toBe('#000000'); // even index = black
 
-      const second: BarcodeStripe = data.stripes[1];
+      const second: BarcodeStripe = data.stripes[1]!;
       expect(second.x).toBe(4);
       expect(second.width).toBe(8); // 4 * 2
       expect(second.height).toBe(100);
@@ -120,18 +120,18 @@ describe('SVG', () => {
       const svg = new SVG('1234', 4);
       const data = svg.toBarcodeData();
 
-      expect(data.stripes[0].x).toBe(0);
-      expect(data.stripes[1].x).toBe(4); // 0 + 4*1
-      expect(data.stripes[2].x).toBe(12); // 4 + 4*2
-      expect(data.stripes[3].x).toBe(24); // 12 + 4*3
+      expect(data.stripes[0]!.x).toBe(0);
+      expect(data.stripes[1]!.x).toBe(4); // 0 + 4*1
+      expect(data.stripes[2]!.x).toBe(12); // 4 + 4*2
+      expect(data.stripes[3]!.x).toBe(24); // 12 + 4*3
     });
 
     it('should use custom stripe width', () => {
       const svg = new SVG('12', 8);
       const data = svg.toBarcodeData();
 
-      expect(data.stripes[0].width).toBe(8); // 8 * 1
-      expect(data.stripes[1].width).toBe(16); // 8 * 2
+      expect(data.stripes[0]!.width).toBe(8); // 8 * 1
+      expect(data.stripes[1]!.width).toBe(16); // 8 * 2
       expect(data.viewBoxWidth).toBe(24); // (1+2)*8
     });
   });
@@ -173,14 +173,14 @@ describe('SVG', () => {
 
       expect(rects).toHaveLength(2);
 
-      expect(rects[0].getAttribute('width')).toBe('4');
-      expect(rects[0].getAttribute('x')).toBe('0');
-      expect(rects[0].getAttribute('fill')).toBe('#000000');
-      expect(rects[0].getAttribute('height')).toBe('100');
+      expect(rects[0]!.getAttribute('width')).toBe('4');
+      expect(rects[0]!.getAttribute('x')).toBe('0');
+      expect(rects[0]!.getAttribute('fill')).toBe('#000000');
+      expect(rects[0]!.getAttribute('height')).toBe('100');
 
-      expect(rects[1].getAttribute('width')).toBe('8');
-      expect(rects[1].getAttribute('x')).toBe('4');
-      expect(rects[1].getAttribute('fill')).toBe('#ffffff');
+      expect(rects[1]!.getAttribute('width')).toBe('8');
+      expect(rects[1]!.getAttribute('x')).toBe('4');
+      expect(rects[1]!.getAttribute('fill')).toBe('#ffffff');
     });
 
     it('should produce consistent output with render() when no selector', () => {
@@ -233,14 +233,14 @@ describe('SVG', () => {
 
       const rects = svgEl.querySelectorAll('rect');
       expect(rects).toHaveLength(2);
-      expect(rects[0].getAttribute('width')).toBe('4');
-      expect(rects[0].getAttribute('x')).toBe('0');
-      expect(rects[0].getAttribute('fill')).toBe('#000000');
-      expect(rects[0].getAttribute('height')).toBe('100');
-      expect(rects[0].getAttribute('y')).toBe('0');
-      expect(rects[1].getAttribute('width')).toBe('8');
-      expect(rects[1].getAttribute('x')).toBe('4');
-      expect(rects[1].getAttribute('fill')).toBe('#ffffff');
+      expect(rects[0]!.getAttribute('width')).toBe('4');
+      expect(rects[0]!.getAttribute('x')).toBe('0');
+      expect(rects[0]!.getAttribute('fill')).toBe('#000000');
+      expect(rects[0]!.getAttribute('height')).toBe('100');
+      expect(rects[0]!.getAttribute('y')).toBe('0');
+      expect(rects[1]!.getAttribute('width')).toBe('8');
+      expect(rects[1]!.getAttribute('x')).toBe('4');
+      expect(rects[1]!.getAttribute('fill')).toBe('#ffffff');
     });
 
     it('should create correct number of rect elements', () => {
@@ -262,16 +262,16 @@ describe('SVG', () => {
       const rects = doc.querySelectorAll('rect');
 
       // First rect: width = 4*1 = 4, x = 0, fill = black
-      expect(rects[0].getAttribute('width')).toBe('4');
-      expect(rects[0].getAttribute('x')).toBe('0');
-      expect(rects[0].getAttribute('fill')).toBe('#000000');
-      expect(rects[0].getAttribute('height')).toBe('100');
-      expect(rects[0].getAttribute('y')).toBe('0');
+      expect(rects[0]!.getAttribute('width')).toBe('4');
+      expect(rects[0]!.getAttribute('x')).toBe('0');
+      expect(rects[0]!.getAttribute('fill')).toBe('#000000');
+      expect(rects[0]!.getAttribute('height')).toBe('100');
+      expect(rects[0]!.getAttribute('y')).toBe('0');
 
       // Second rect: width = 4*2 = 8, x = 4, fill = white
-      expect(rects[1].getAttribute('width')).toBe('8');
-      expect(rects[1].getAttribute('x')).toBe('4');
-      expect(rects[1].getAttribute('fill')).toBe('#ffffff');
+      expect(rects[1]!.getAttribute('width')).toBe('8');
+      expect(rects[1]!.getAttribute('x')).toBe('4');
+      expect(rects[1]!.getAttribute('fill')).toBe('#ffffff');
     });
 
     it('should set SVG dimensions correctly', () => {
@@ -300,8 +300,8 @@ describe('SVG', () => {
       expect(document.querySelectorAll('svg').length).toBe(1);
       // The SVG should be in the first matching element
       const targets = document.querySelectorAll('.target');
-      expect(targets[0].querySelector('svg')).not.toBeNull();
-      expect(targets[1].querySelector('svg')).toBeNull();
+      expect(targets[0]!.querySelector('svg')).not.toBeNull();
+      expect(targets[1]!.querySelector('svg')).toBeNull();
     });
   });
 });

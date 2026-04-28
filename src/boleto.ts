@@ -695,7 +695,7 @@ export class Boleto {
    * @returns The checksum of the barcode
    */
   checksum(): string {
-    return this.barcode()[BARCODE_CHECKSUM_POSITION];
+    return this.barcode()[BARCODE_CHECKSUM_POSITION]!;
   }
 
   /**

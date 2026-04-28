@@ -113,7 +113,7 @@ export class SVG {
     let pos = 0;
 
     for (let i = 0; i < this.stripes.length; i += 1) {
-      const width = this.stripeWidth * this.stripes[i];
+      const width = this.stripeWidth * this.stripes[i]!;
       stripes.push({
         x: pos,
         width,

@@ -106,7 +106,7 @@ describe('Boleto', () => {
       // Flip the barcode checksum digit (position 32 in VALID_BOLETO_CLEAN)
       const wrongChecksum =
         VALID_BOLETO_CLEAN.slice(0, 32) +
-        ((parseInt(VALID_BOLETO_CLEAN[32], 10) + 1) % 10).toString() +
+        ((parseInt(VALID_BOLETO_CLEAN[32]!, 10) + 1) % 10).toString() +
         VALID_BOLETO_CLEAN.slice(33);
       // Use Object.create so the object inherits barcode() from the prototype
       const invalidBoleto = Object.assign(
@@ -478,7 +478,7 @@ describe('Boleto', () => {
       const boleto = new Boleto(VALID_BOLETO);
       const data = boleto.barcodeData();
 
-      const firstStripe = data.stripes[0];
+      const firstStripe = data.stripes[0]!;
       expect(firstStripe).toHaveProperty('x');
       expect(firstStripe).toHaveProperty('width');
       expect(firstStripe).toHaveProperty('height');
@@ -491,9 +491,9 @@ describe('Boleto', () => {
       const boleto = new Boleto(VALID_BOLETO);
       const data = boleto.barcodeData();
 
-      expect(data.stripes[0].color).toBe('#000000');
-      expect(data.stripes[1].color).toBe('#ffffff');
-      expect(data.stripes[2].color).toBe('#000000');
+      expect(data.stripes[0]!.color).toBe('#000000');
+      expect(data.stripes[1]!.color).toBe('#ffffff');
+      expect(data.stripes[2]!.color).toBe('#000000');
     });
   });
 
@@ -534,10 +534,10 @@ describe('Boleto', () => {
 
       const rects = svgEl.querySelectorAll('rect');
       expect(rects.length).toBeGreaterThan(0);
-      expect(rects[0].getAttribute('fill')).toBe('#000000');
-      expect(rects[0].getAttribute('height')).toBe('100');
-      expect(rects[0].getAttribute('y')).toBe('0');
-      expect(rects[1].getAttribute('fill')).toBe('#ffffff');
+      expect(rects[0]!.getAttribute('fill')).toBe('#000000');
+      expect(rects[0]!.getAttribute('height')).toBe('100');
+      expect(rects[0]!.getAttribute('y')).toBe('0');
+      expect(rects[1]!.getAttribute('fill')).toBe('#ffffff');
     });
 
     it('should throw when selector does not match any element', () => {
