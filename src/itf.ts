@@ -5,15 +5,33 @@
  */
 
 /** ITF bar-width pattern string for a single decimal digit (1 = narrow, 2 = wide) */
-type DigitWeight = '11221' | '21112' | '12112' | '22111' | '11212' | '21211' | '12211' | '11122' | '21121' | '12121';
+type DigitWeight =
+  | '11221'
+  | '21112'
+  | '12112'
+  | '22111'
+  | '11212'
+  | '21211'
+  | '12211'
+  | '11122'
+  | '21121'
+  | '12121';
 
 /**
  * Representations of each decimal digit (0-9) in ITF encoding
  * Each digit is represented by 5 bars: 1 = narrow, 2 = wide
  */
 const DIGIT_WEIGHTS: readonly [
-  DigitWeight, DigitWeight, DigitWeight, DigitWeight, DigitWeight,
-  DigitWeight, DigitWeight, DigitWeight, DigitWeight, DigitWeight,
+  DigitWeight,
+  DigitWeight,
+  DigitWeight,
+  DigitWeight,
+  DigitWeight,
+  DigitWeight,
+  DigitWeight,
+  DigitWeight,
+  DigitWeight,
+  DigitWeight,
 ] = [
   '11221', // 0
   '21112', // 1
