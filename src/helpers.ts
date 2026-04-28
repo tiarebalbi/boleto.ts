@@ -38,7 +38,7 @@ export function modulo11(number: string | string[]): number {
   let sum = 0;
 
   for (let i = 0; i < digits.length; i += 1) {
-    sum += ((i % 8) + 2) * parseInt(digits[i], 10);
+    sum += ((i % 8) + 2) * parseInt(digits[i]!, 10);
   }
 
   return (11 - (sum % 11)) % 10 || 1;
