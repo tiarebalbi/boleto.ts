@@ -3,7 +3,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { modulo11 } from './helpers.ts';
+import { modulo11 } from './helpers.js';
 
 describe('modulo11', () => {
   it('should calculate correct checksum for string input', () => {
