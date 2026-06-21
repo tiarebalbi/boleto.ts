@@ -3,7 +3,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { encode } from './itf.ts';
+import { encode } from './itf.js';
 
 describe('encode', () => {
   it('should encode "01" correctly', () => {

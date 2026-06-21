@@ -3,8 +3,8 @@
  */
 
 import { describe, it, expect, beforeEach } from 'vitest';
-import { SVG } from './svg.ts';
-import type { BarcodeData, BarcodeStripe } from './svg.ts';
+import { SVG } from './svg.js';
+import type { BarcodeData, BarcodeStripe } from './svg.js';
 
 describe('SVG', () => {
   describe('constructor', () => {

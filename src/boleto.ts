@@ -4,10 +4,10 @@
  * @module Boleto
  */
 
-import { SVG } from './svg.ts';
-import type { BarcodeData } from './svg.ts';
-import { encode } from './itf.ts';
-import { modulo11 } from './helpers.ts';
+import { SVG } from './svg.js';
+import type { BarcodeData } from './svg.js';
+import { encode } from './itf.js';
+import { modulo11 } from './helpers.js';
 
 /**
  * Currency information returned by the currency method

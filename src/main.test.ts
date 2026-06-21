@@ -9,8 +9,8 @@ import {
   SVG,
   encode,
   modulo11,
-} from './main.ts';
-import type { Currency, BarcodeStripe, BarcodeData } from './main.ts';
+} from './main.js';
+import type { Currency, BarcodeStripe, BarcodeData } from './main.js';
 
 describe('main exports', () => {
   it('should export Boleto class', () => {

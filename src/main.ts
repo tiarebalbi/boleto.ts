@@ -6,9 +6,9 @@
  * @packageDocumentation
  */
 
-export { Boleto, BoletoValidationError } from './boleto.ts';
-export type { Currency } from './boleto.ts';
-export { SVG } from './svg.ts';
-export type { BarcodeStripe, BarcodeData } from './svg.ts';
-export { encode } from './itf.ts';
-export { modulo11 } from './helpers.ts';
+export { Boleto, BoletoValidationError } from './boleto.js';
+export type { Currency } from './boleto.js';
+export { SVG } from './svg.js';
+export type { BarcodeStripe, BarcodeData } from './svg.js';
+export { encode } from './itf.js';
+export { modulo11 } from './helpers.js';

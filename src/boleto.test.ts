@@ -3,7 +3,7 @@
  */
 
 import { describe, it, expect, beforeEach } from 'vitest';
-import { Boleto, BoletoValidationError } from './boleto.ts';
+import { Boleto, BoletoValidationError } from './boleto.js';
 
 // Valid bank slip numbers for testing
 // Format: 00000.00000 00000.000000 00000.000000 0 00000000000000
